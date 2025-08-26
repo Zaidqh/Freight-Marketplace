@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <!-- =========================================================
+         Duff Bros Freight — Home / Landing
+         Fully compatible with assets/common.js & server.js
+         ======================================================= -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>Duff Bros Freight — UK ↔ EU Marketplace</title>
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+
+    <!-- Project theme -->
+    <link href="assets/styles.css" rel="stylesheet"/>
+
+    <link rel="icon" href="data:,"/>
+    <meta name="color-scheme" content="dark light"/>
+  </head>
+
+  <body class="bg-body">
+    <!-- =========================================================
+         NAVBAR (sticky, shared on all pages)
+         ======================================================= -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
+      <div class="container">
+        <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="index.html">
+          <i class="bi bi-truck"></i>
+          <span>Duff Bros Freight</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fmNav" aria-controls="fmNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="fmNav" class="collapse navbar-collapse">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html"><i class="bi bi-house"></i> Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="loads.html"><i class="bi bi-box-seam"></i> Post Shipment</a></li>
+            <li class="nav-item"><a class="nav-link" href="bids.html"><i class="bi bi-cash-coin"></i> Quotes</a></li>
+            <li class="nav-item"><a class="nav-link" href="bookings.html"><i class="bi bi-journal-check"></i> Bookings</a></li>
+            <li class="nav-item"><a class="nav-link" href="messages.html"><i class="bi bi-chat-text"></i> Messages</a></li>
+            <li class="nav-item"><a class="nav-link" href="admin.html"><i class="bi bi-shield-lock"></i> Admin</a></li>
+          </ul>
+
+          <!-- Shared quick controls -->
+          <div class="d-flex align-items-center gap-2">
+            <div class="input-group input-group-sm" style="width: 280px">
+              <span class="input-group-text">API</span>
+              <input id="baseUrl" class="form-control" value="http://localhost:3000" aria-label="API base URL"/>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" id="btnHealth">
+              <i class="bi bi-activity"></i> Health
+            </button>
+            <button class="btn btn-sm btn-danger" id="btnSeed">
+              <i class="bi bi-lightning-charge"></i> Seed
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- =========================================================
+         HERO
+         ======================================================= -->
+    <header class="py-5 hero-slate">
+      <div class="container">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-xl-7 text-white">
+            <span class="badge bg-white text-dark mb-3">Marketplace</span>
+            <h1 class="display-5 fw-bold lh-sm">UK ↔ EU Freight Marketplace</h1>
+            <p class="lead text-white-50 mt-2">
+              Shippers post shipments. Verified transporters quote, book, and deliver — with built-in messaging and status tracking.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+              <a class="btn btn-primary" href="loads.html"><i class="bi bi-box-seam"></i> Post a shipment</a>
+              <a class="btn btn-outline-primary" href="bids.html"><i class="bi bi-cash-coin"></i> Review quotes</a>
+              <a class="btn btn-outline-secondary" href="bookings.html"><i class="bi bi-journal-check"></i> Track bookings</a>
+            </div>
+
+            <!-- Status strip -->
+            <div class="mt-4 small">
+              <span class="text-white-50">API base: </span>
+              <span class="font-monospace" id="statusBase">http://localhost:3000</span>
+              <span class="mx-2">•</span>
+              <span class="text-white-50">Auth profiles:</span>
+              <span class="font-monospace">shipper / transporter / admin</span>
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-5">
+            <!-- Quick start callout -->
+            <div class="card border-0 shadow-medium">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-rocket-takeoff text-primary"></i>
+                  <h2 class="h5 m-0">Quick start</h2>
+                </div>
+                <ol class="mb-0 small text-secondary">
+                  <li>Ensure the API is running at <span class="kbd">http://localhost:3000</span>.</li>
+                  <li>Click <b>Seed</b> in the navbar to load demo shipments &amp; tokens.</li>
+                  <li>Paste tokens below and press <b>Save</b>. You’re ready to demo.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div><!-- /row -->
+      </div>
+    </header>
+
+    <!-- =========================================================
+         TOKENS PANEL (used by assets/common.js)
+         ======================================================= -->
+    <section class="container py-4">
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="card border-0 shadow-soft">
+            <div class="card-header fw-semibold">Authentication tokens</div>
+            <div class="card-body">
+              <p class="text-secondary small mb-3">
+                After seeding, copy the tokens from the API response and paste them here. They’re saved locally and reused across pages.
+              </p>
+              <div class="row g-3">
+                <div class="col-12 col-md-4">
+                  <label class="form-label small">Shipper token</label>
+                  <input class="form-control" id="tok_ship" placeholder="paste shipper token…"/>
+                </div>
+                <div class="col-12 col-md-4">
+                  <label class="form-label small">Transporter token</label>
+                  <input class="form-control" id="tok_trans" placeholder="paste transporter token…"/>
+                </div>
+                <div class="col-12 col-md-4">
+                  <label class="form-label small">Admin token</label>
+                  <input class="form-control" id="tok_admin" placeholder="paste admin token…"/>
+                </div>
+              </div>
+              <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-primary" id="btnSaveTokens"><i class="bi bi-save"></i> Save</button>
+                <button class="btn btn-outline-secondary" id="btnClearTokens"><i class="bi bi-eraser"></i> Clear</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         FEATURE CARDS
+         ======================================================= -->
+    <section class="container pb-4">
+      <div class="row g-3">
+        <div class="col-12 col-lg-3">
+          <div class="card h-100">
+            <div class="card-body d-flex flex-column">
+              <h2 class="h6 d-flex align-items-center gap-2"><i class="bi bi-map text-primary"></i> Post &amp; browse loads</h2>
+              <p class="text-secondary small flex-grow-1">Add route, dates, weight/volume, and notes. Transporters will quote rapidly.</p>
+              <a class="btn btn-outline-primary mt-auto" href="loads.html">Open Loads</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <div class="card h-100">
+            <div class="card-body d-flex flex-column">
+              <h2 class="h6 d-flex align-items-center gap-2"><i class="bi bi-cash-coin text-success"></i> Quotes</h2>
+              <p class="text-secondary small flex-grow-1">Compare bids, message transporters, accept the best and create a booking.</p>
+              <a class="btn btn-outline-success mt-auto" href="bids.html">Open Quotes</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <div class="card h-100">
+            <div class="card-body d-flex flex-column">
+              <h2 class="h6 d-flex align-items-center gap-2"><i class="bi bi-journal-check text-info"></i> Bookings</h2>
+              <p class="text-secondary small flex-grow-1">Track booked jobs through ENROUTE → COLLECTED → IN_TRANSIT → DELIVERED.</p>
+              <a class="btn btn-outline-info mt-auto" href="bookings.html">Open Bookings</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <div class="card h-100">
+            <div class="card-body d-flex flex-column">
+              <h2 class="h6 d-flex align-items-center gap-2"><i class="bi bi-chat-text text-warning"></i> Messages</h2>
+              <p class="text-secondary small flex-grow-1">Keep shippers &amp; drivers aligned with per-booking threads &amp; attachments.</p>
+              <a class="btn btn-outline-warning mt-auto" href="messages.html">Open Messages</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         OPEN SHIPMENTS (dynamic via common.js → #homeShipments)
+         ======================================================= -->
+    <section class="container pb-5">
+      <div class="d-flex align-items-end justify-content-between mb-2">
+        <div>
+          <h2 class="h4 fw-bold m-0">Open shipments</h2>
+          <div class="text-secondary small">Latest posts from shippers (auto-updates when you seed or add).</div>
+        </div>
+        <a class="btn btn-sm btn-outline-secondary" href="loads.html"><i class="bi bi-plus-circle"></i> Post new</a>
+      </div>
+
+      <ul id="homeShipments" class="row g-3 list-unstyled">
+        <!-- Skeletons (replaced by JS) -->
+        <li class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body placeholder-wave">
+              <span class="placeholder col-6"></span>
+              <div class="mt-2"><span class="placeholder col-10"></span></div>
+              <div class="mt-2"><span class="placeholder col-4"></span></div>
+            </div>
+          </div>
+        </li>
+        <li class="col-12 col-md-6 col-lg-4 d-none d-md-block">
+          <div class="card h-100">
+            <div class="card-body placeholder-wave">
+              <span class="placeholder col-5"></span>
+              <div class="mt-2"><span class="placeholder col-9"></span></div>
+              <div class="mt-2"><span class="placeholder col-3"></span></div>
+            </div>
+          </div>
+        </li>
+        <li class="col-12 col-md-6 col-lg-4 d-none d-lg-block">
+          <div class="card h-100">
+            <div class="card-body placeholder-wave">
+              <span class="placeholder col-4"></span>
+              <div class="mt-2"><span class="placeholder col-6"></span></div>
+              <div class="mt-2"><span class="placeholder col-7"></span></div>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="text-end">
+        <a class="btn btn-outline-light btn-sm" href="loads.html#list"><i class="bi bi-list-ul"></i> View all</a>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         FEATURED LANES (static content / marketing)
+         ======================================================= -->
+    <section id="lanes" class="band py-5">
+      <div class="container">
+        <div class="row g-3 align-items-stretch">
+          <div class="col-12 col-xl-7">
+            <div class="card h-100">
+              <div class="card-header fw-semibold">Featured lanes</div>
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-6">
+                    <div class="border rounded p-3 h-100">
+                      <div class="d-flex justify-content-between">
+                        <div class="fw-semibold">UK ↔ Spain</div>
+                        <span class="badge bg-info text-dark">Weekly</span>
+                      </div>
+                      <div class="text-secondary small mt-1">Ibiza / Mallorca specialists</div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="border rounded p-3 h-100">
+                      <div class="d-flex justify-content-between">
+                        <div class="fw-semibold">UK ↔ France</div>
+                        <span class="badge bg-info text-dark">Weekly</span>
+                      </div>
+                      <div class="text-secondary small mt-1">Nord / Île-de-France</div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="border rounded p-3 h-100">
+                      <div class="d-flex justify-content-between">
+                        <div class="fw-semibold">UK Domestic</div>
+                        <span class="badge bg-info text-dark">Daily</span>
+                      </div>
+                      <div class="text-secondary small mt-1">Nationwide pickup windows</div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="border rounded p-3 h-100">
+                      <div class="d-flex justify-content-between">
+                        <div class="fw-semibold">Custom moves</div>
+                        <span class="badge bg-secondary">On-demand</span>
+                      </div>
+                      <div class="text-secondary small mt-1">Events, exhibitions, relocations</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-end mt-3">
+                  <a class="btn btn-outline-secondary btn-sm" href="loads.html">Post to a lane</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- How it works -->
+          <div class="col-12 col-xl-5">
+            <div class="card h-100">
+              <div class="card-header fw-semibold">How it works</div>
+              <div class="card-body">
+                <ol class="mb-0">
+                  <li class="mb-2"><strong>Shippers</strong> post with route, cargo, budget &amp; dates.</li>
+                  <li class="mb-2"><strong>Transporters</strong> submit quotes with price &amp; notes.</li>
+                  <li class="mb-2"><strong>Shippers</strong> accept → booking is created.</li>
+                  <li class="mb-2"><strong>Transporters</strong> update job statuses.</li>
+                  <li class="mb-0"><strong>All parties</strong> collaborate in messages.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div><!-- /row -->
+      </div>
+    </section>
+
+    <!-- =========================================================
+         HTML TEMPLATES (safe placeholders for later JS)
+         ======================================================= -->
+    <section class="container py-5">
+      <div class="card">
+        <div class="card-header fw-semibold">HTML templates (for client rendering)</div>
+        <div class="card-body">
+          <p class="text-secondary small">
+            These blocks are available if you prefer client-side templating (optional). They don’t execute by themselves.
+          </p>
+
+          <!-- Load list item -->
+          <template id="tpl-load-item">
+            <button class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+              <div class="me-auto">
+                <div class="small text-secondary">id: <span class="code">xxxx</span></div>
+                <div class="fw-semibold">City A → City B</div>
+              </div>
+              <div class="text-end">
+                <div><span class="badge text-bg-success">OPEN</span></div>
+                <div class="text-secondary small mt-1">£ 0.00</div>
+              </div>
+            </button>
+          </template>
+
+          <!-- Bid table row -->
+          <template id="tpl-bid-row">
+            <tr>
+              <td class="small"><span class="code">bid-xxxx</span></td>
+              <td>£ 0.00</td>
+              <td><span class="badge text-bg-secondary">PENDING</span></td>
+              <td class="text-end"><button class="btn btn-sm btn-success">Accept</button></td>
+            </tr>
+          </template>
+
+          <!-- Message bubble -->
+          <template id="tpl-msg-item">
+            <div class="border rounded p-2 mb-2">
+              <div class="text-secondary small">2025-08-16 12:00 · by user-xxxx</div>
+              <div>Message text…</div>
+            </div>
+          </template>
+
+          <!-- Booking card -->
+          <template id="tpl-booking-card">
+            <div class="border rounded p-2 mb-3">
+              <div class="text-secondary small mb-1">
+                booking <span class="code">book-xxxx</span> · status
+                <span class="badge text-bg-primary">BOOKED</span>
+              </div>
+              <div>load: <span class="code">load-xxxx</span> · transporter: <span class="code">usr-xxxx</span></div>
+              <div class="mt-2"><button class="btn btn-sm btn-outline-secondary">Timeline</button></div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         FAQ / NEXT
+         ======================================================= -->
+    <section class="container pb-5">
+      <div class="row g-4">
+        <div class="col-12 col-lg-6">
+          <div class="card h-100">
+            <div class="card-header fw-semibold">FAQ</div>
+            <div class="card-body">
+              <div class="mb-3">
+                <h3 class="h6">Do I need a database?</h3>
+                <p class="text-secondary small mb-0">Not for the demo — the API stores in memory. In production, use PostgreSQL or MongoDB.</p>
+              </div>
+              <div class="mb-3">
+                <h3 class="h6">How are transporters verified?</h3>
+                <p class="text-secondary small mb-0">Admin triggers KYB/KYC/insurance checks. The Admin page has a stub you can extend.</p>
+              </div>
+              <div class="mb-0">
+                <h3 class="h6">Is it responsive?</h3>
+                <p class="text-secondary small mb-0">Yes — Bootstrap’s grid &amp; components adapt across devices.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="card h-100">
+            <div class="card-header fw-semibold">What’s next?</div>
+            <div class="card-body">
+              <ol class="mb-0">
+                <li>Use <b>Loads</b> to post and browse shipments.</li>
+                <li>In <b>Quotes</b>, accept a bid to create a booking &amp; message thread.</li>
+                <li>Track progress in <b>Bookings</b> and chat in <b>Messages</b>.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         FOOTER
+         ======================================================= -->
+    <footer class="border-top py-4">
+      <div class="container small text-secondary d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>© <span id="year">2025</span> Duff Bros Freight (Demo)</div>
+        <div class="d-flex align-items-center gap-3">
+          <a class="link-secondary text-decoration-none" href="#lanes">Featured lanes</a>
+          <a class="link-secondary text-decoration-none" href="loads.html">Loads</a>
+          <a class="link-secondary text-decoration-none" href="bids.html">Quotes</a>
+          <a class="link-secondary text-decoration-none" href="bookings.html">Bookings</a>
+          <a class="link-secondary text-decoration-none" href="messages.html">Messages</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- =========================================================
+         OFFCANVAS + TOAST (shared UI)
+         ======================================================= -->
+    <aside id="sidePanel" class="offcanvas offcanvas-end" tabindex="-1" aria-labelledby="sidePanelLabel">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="sidePanelLabel">Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body" id="sidePanelBody">
+        <div class="text-secondary small">No content yet.</div>
+      </div>
+    </aside>
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
+      <div id="toast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body" id="toastBody">Ready.</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         SCRIPTS
+         ======================================================= -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/common.js" defer></script>
+  </body>
+</html>

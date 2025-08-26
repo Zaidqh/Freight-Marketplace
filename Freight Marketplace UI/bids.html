@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <!-- =========================================================
+         Duff Bros Freight — Quotes / Bids page
+         Fully compatible with assets/common.js & server.js
+         IDs used by JS:
+           - #shipmentInfo : header summary of the selected shipment
+           - #quotesList   : <ul> container for quote cards
+           - #quoteForm    : form to submit a new quote
+         Opens with: bids.html?id=<SHIPMENT_ID>
+         ======================================================= -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>Duff Bros Freight — Quotes</title>
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+
+    <!-- Project theme -->
+    <link href="assets/styles.css" rel="stylesheet"/>
+
+    <link rel="icon" href="data:,"/>
+    <meta name="color-scheme" content="dark light"/>
+  </head>
+
+  <body class="bg-body">
+    <!-- =========================================================
+         NAVBAR (sticky, shared across pages)
+         ======================================================= -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
+      <div class="container">
+        <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="index.html">
+          <i class="bi bi-truck"></i>
+          <span>Duff Bros Freight</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fmNav" aria-controls="fmNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="fmNav" class="collapse navbar-collapse">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="loads.html"><i class="bi bi-box-seam"></i> Post Shipment</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="bids.html"><i class="bi bi-cash-coin"></i> Quotes</a></li>
+            <li class="nav-item"><a class="nav-link" href="bookings.html"><i class="bi bi-journal-check"></i> Bookings</a></li>
+            <li class="nav-item"><a class="nav-link" href="messages.html"><i class="bi bi-chat-text"></i> Messages</a></li>
+            <li class="nav-item"><a class="nav-link" href="admin.html"><i class="bi bi-shield-lock"></i> Admin</a></li>
+          </ul>
+
+          <!-- Shared quick controls -->
+          <div class="d-flex align-items-center gap-2">
+            <div class="input-group input-group-sm" style="width: 280px">
+              <span class="input-group-text">API</span>
+              <input id="baseUrl" class="form-control" value="http://localhost:3000" aria-label="API base URL"/>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" id="btnHealth">
+              <i class="bi bi-activity"></i> Health
+            </button>
+            <button class="btn btn-sm btn-danger" id="btnSeed">
+              <i class="bi bi-lightning-charge"></i> Seed
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- =========================================================
+         HERO
+         ======================================================= -->
+    <header class="py-5 hero-slate">
+      <div class="container">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-xl-7 text-white">
+            <span class="badge bg-white text-dark mb-3">Quotes</span>
+            <h1 class="display-5 fw-bold lh-sm">Submit &amp; manage quotes</h1>
+            <p class="lead text-white-50 mt-2">
+              Load details on the left, quotes on the right. Transporters submit, shippers compare and accept —
+              accepting creates a booking and opens a message thread.
+            </p>
+            <div class="d-flex flex-wrap gap-3 mt-1 small text-white-75">
+              <span><i class="bi bi-clipboard2-check"></i> Clear scope</span>
+              <span><i class="bi bi-cash-coin"></i> Transparent pricing</span>
+              <span><i class="bi bi-chat-square-dots"></i> Built-in chat on booking</span>
+            </div>
+
+            <!-- Status strip (cosmetic) -->
+            <div class="mt-4 small">
+              <span class="text-white-50">API base: </span>
+              <span class="font-monospace" id="statusBase">http://localhost:3000</span>
+              <span class="mx-2">•</span>
+              <span class="text-white-50">Open with:</span>
+              <span class="font-monospace">bids.html?id=&lt;SHIPMENT_ID&gt;</span>
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-5">
+            <div class="card border-0 shadow-medium">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-info-circle text-primary"></i>
+                  <h2 class="h5 m-0">Quote guidance</h2>
+                </div>
+                <ul class="mb-0 small text-white-50">
+                  <li>State total price (GBP) and ETA days clearly.</li>
+                  <li>Mention equipment (box van, curtainsider, reefer, flatbed) in notes.</li>
+                  <li>Include customs handling if cross-border is involved.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div><!-- /row -->
+      </div>
+    </header>
+
+    <!-- =========================================================
+         SHIPMENT HEADER + NAV TOOLS
+         ======================================================= -->
+    <section class="container py-4">
+      <div class="row g-4">
+        <div class="col-12 col-xl-8">
+          <div class="card border-0 shadow-soft">
+            <div class="card-header fw-semibold">
+              Selected shipment
+            </div>
+            <div class="card-body">
+              <!-- Filled by assets/common.js → renderShipmentHeader() -->
+              <div id="shipmentInfo" class="pop-in">
+                <!-- Placeholder before data arrives -->
+                <div class="placeholder-wave">
+                  <span class="placeholder col-3"></span>
+                  <div class="mt-2"><span class="placeholder col-7"></span></div>
+                </div>
+              </div>
+
+              <!-- Quick actions -->
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <a class="btn btn-outline-secondary" href="loads.html">
+                  <i class="bi bi-arrow-left"></i> Back to loads
+                </a>
+                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#quoteHelp">
+                  <i class="bi bi-lightbulb"></i> Quote tips
+                </button>
+                <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#faqPanel">
+                  <i class="bi bi-question-circle"></i> FAQ
+                </button>
+                <a class="btn btn-outline-secondary" href="bookings.html">
+                  <i class="bi bi-journal-check"></i> Go to bookings
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick nav by ID -->
+        <div class="col-12 col-xl-4">
+          <div class="card border-0 shadow-soft">
+            <div class="card-header fw-semibold">Open a shipment by ID</div>
+            <div class="card-body">
+              <div class="input-group">
+                <input id="goShipId" class="form-control" placeholder="paste shipment id…"/>
+                <button class="btn btn-primary" id="btnGoShip"><i class="bi bi-box-arrow-in-right"></i> Open</button>
+              </div>
+              <div class="text-secondary small mt-2">
+                Paste an ID from the Loads page or API and jump straight here.
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-0 shadow-soft mt-3">
+            <div class="card-header fw-semibold">Status legend</div>
+            <div class="card-body small">
+              <div class="row row-cols-2 g-2">
+                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-primary">ACTIVE</span><span class="text-secondary">open bid</span></div>
+                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-success">ACCEPTED</span><span class="text-secondary">won</span></div>
+                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-secondary">REJECTED</span><span class="text-secondary">lost</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /row -->
+    </section>
+
+    <!-- =========================================================
+         SUBMIT QUOTE FORM (ID: #quoteForm)
+         ======================================================= -->
+    <section class="container">
+      <div class="row g-4">
+        <div class="col-12 col-xl-6">
+          <div class="card border-0 shadow-soft">
+            <div class="card-header fw-semibold">Submit a quote</div>
+            <div class="card-body">
+              <form id="quoteForm" class="vstack gap-3">
+                <!-- Company -->
+                <div class="row g-3">
+                  <div class="col-12 col-md-7">
+                    <label class="form-label small">Company name</label>
+                    <input name="companyName" class="form-control" placeholder="e.g., Duff Logistics Ltd" required/>
+                  </div>
+                  <div class="col-12 col-md-5">
+                    <label class="form-label small">Contact email</label>
+                    <input name="contactEmail" type="email" class="form-control" placeholder="ops@example.com"/>
+                  </div>
+                </div>
+
+                <!-- Price & ETA -->
+                <div class="row g-3">
+                  <div class="col-12 col-sm-6">
+                    <label class="form-label small">Total price (GBP)</label>
+                    <div class="input-group">
+                      <span class="input-group-text">£</span>
+                      <input name="price" inputmode="decimal" class="form-control" placeholder="e.g., 1450" required/>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <label class="form-label small">ETA (days)</label>
+                    <input name="etaDays" inputmode="numeric" class="form-control" placeholder="e.g., 2"/>
+                  </div>
+                </div>
+
+                <!-- Notes -->
+                <div>
+                  <label class="form-label small">Notes for shipper</label>
+                  <textarea name="message" class="form-control" rows="4" placeholder="Equipment, inclusions (tail-lift, two-man), customs support, schedule, etc."></textarea>
+                </div>
+
+                <!-- Actions -->
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i> Submit quote</button>
+                  <button class="btn btn-outline-secondary" type="reset"><i class="bi bi-eraser"></i> Clear</button>
+                  <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#quoteHelp">
+                    <i class="bi bi-lightbulb"></i> Tips
+                  </button>
+                </div>
+
+                <div class="text-secondary small">
+                  Submitting a quote does not guarantee booking. If your quote is accepted, a booking is created and a chat thread opens automatically.
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUOTES LIST (ID: #quotesList) -->
+        <div class="col-12 col-xl-6">
+          <div class="card border-0 shadow-soft h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+              <span class="fw-semibold">Quotes for this shipment</span>
+              <button class="btn btn-sm btn-outline-secondary" id="btnRefreshQuotes"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+            </div>
+            <div class="card-body">
+              <ul id="quotesList" class="vstack gap-3 list-unstyled">
+                <!-- Placeholder skeletons (replaced by JS) -->
+                <li class="card">
+                  <div class="card-body placeholder-wave">
+                    <div><span class="placeholder col-5"></span></div>
+                    <div class="mt-2"><span class="placeholder col-3"></span></div>
+                    <div class="mt-3"><span class="placeholder col-4"></span></div>
+                  </div>
+                </li>
+                <li class="card">
+                  <div class="card-body placeholder-wave">
+                    <div><span class="placeholder col-6"></span></div>
+                    <div class="mt-2"><span class="placeholder col-2"></span></div>
+                    <div class="mt-3"><span class="placeholder col-5"></span></div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="card-footer small text-secondary">
+              Click <b>Accept</b> on a quote to create a booking. This also opens a message thread for that job.
+            </div>
+          </div>
+        </div>
+      </div><!-- /row -->
+    </section>
+
+    <!-- =========================================================
+         COMPARISON TABLE (optional, static example)
+         ======================================================= -->
+    <section class="container py-4">
+      <div class="card">
+        <div class="card-header fw-semibold">How shippers compare quotes (example)</div>
+        <div class="table-responsive">
+          <table class="table table-dark table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Transporter</th>
+                <th>Price (GBP)</th>
+                <th>ETA (days)</th>
+                <th>Notes</th>
+                <th style="width: 12%">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Duff Logistics Ltd</td>
+                <td>£ 1,450.00</td>
+                <td>2</td>
+                <td>Two-man team, tail-lift, customs included</td>
+                <td><span class="badge text-bg-success">ACCEPTED</span></td>
+              </tr>
+              <tr>
+                <td>Trans-Euro Freight</td>
+                <td>£ 1,520.00</td>
+                <td>3</td>
+                <td>Standard service, customs on request</td>
+                <td><span class="badge text-bg-secondary">REJECTED</span></td>
+              </tr>
+              <tr>
+                <td>Fast Movers UK</td>
+                <td>£ 1,380.00</td>
+                <td>3</td>
+                <td>Single-man, no tail-lift</td>
+                <td><span class="badge text-bg-secondary">REJECTED</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer small text-secondary">
+          This table is illustrative. The live list above shows real quotes for the selected shipment.
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         HTML TEMPLATES (optional, for client-side rendering)
+         ======================================================= -->
+    <section class="container py-4">
+      <div class="card">
+        <div class="card-header fw-semibold">HTML templates (optional)</div>
+        <div class="card-body">
+          <p class="text-secondary small">
+            These templates are optional helpers if you want to render quotes or headers via JS later.
+          </p>
+
+          <!-- Quote card template -->
+          <template id="tpl-quote-card">
+            <li class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <div class="fw-semibold">Transporter name</div>
+                    <div class="small text-secondary">ops@example.com</div>
+                  </div>
+                  <div class="text-end">
+                    <div class="h5 m-0">£ 0000.00</div>
+                    <div class="small text-secondary">ETA: 0d</div>
+                  </div>
+                </div>
+                <div class="mt-2">Notes…</div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <span class="badge text-bg-primary">ACTIVE</span>
+                  <div><button class="btn btn-sm btn-success">Accept</button></div>
+                </div>
+              </div>
+            </li>
+          </template>
+
+          <!-- Shipment header template -->
+          <template id="tpl-shipment-header">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+              <div>
+                <div class="small text-secondary">shipment <span class="code">load-xxxx</span></div>
+                <div class="h5 fw-bold mb-0">City A → City B</div>
+                <div class="text-secondary small mt-1">Title or summary</div>
+              </div>
+              <div class="text-end"><span class="badge text-bg-success">OPEN</span></div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         FAQ / POLICY
+         ======================================================= -->
+    <section class="container pb-5">
+      <div class="row g-4">
+        <div class="col-12 col-lg-6">
+          <div class="card h-100">
+            <div class="card-header fw-semibold">FAQ</div>
+            <div class="card-body">
+              <div class="mb-3">
+                <h3 class="h6">What happens when I accept a quote?</h3>
+                <p class="text-secondary small mb-0">
+                  The system creates a booking tied to the shipment and opens a message thread to coordinate
+                  pickup, paperwork, and delivery.
+                </p>
+              </div>
+              <div class="mb-3">
+                <h3 class="h6">Can I edit or withdraw a quote?</h3>
+                <p class="text-secondary small mb-0">
+                  In the MVP, quotes are immutable; you can submit another quote with updated details. In production,
+                  editing/withdrawing will be supported.
+                </p>
+              </div>
+              <div class="mb-0">
+                <h3 class="h6">How do I add attachments?</h3>
+                <p class="text-secondary small mb-0">
+                  Attachments are available within the Messages thread after a booking is created.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="card h-100">
+            <div class="card-header fw-semibold">Policy</div>
+            <div class="card-body">
+              <div class="mb-3">
+                <h3 class="h6">Fair bidding</h3>
+                <p class="text-secondary small mb-0">Quotes should reflect true costs; no bait-and-switch pricing.</p>
+              </div>
+              <div class="mb-3">
+                <h3 class="h6">Insurance &amp; compliance</h3>
+                <p class="text-secondary small mb-0">Transporters must maintain proper insurance and comply with local laws.</p>
+              </div>
+              <div class="mb-0">
+                <h3 class="h6">Data privacy</h3>
+                <p class="text-secondary small mb-0">Limit personal data in quotes; share sensitive details in the private message thread after booking.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /row -->
+    </section>
+
+    <!-- =========================================================
+         FOOTER
+         ======================================================= -->
+    <footer class="border-top py-4">
+      <div class="container small text-secondary d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>© <span id="year">2025</span> Duff Bros Freight — Quotes</div>
+        <div class="d-flex align-items-center gap-3">
+          <a class="link-secondary text-decoration-none" href="loads.html">Loads</a>
+          <a class="link-secondary text-decoration-none" href="bookings.html">Bookings</a>
+          <a class="link-secondary text-decoration-none" href="messages.html">Messages</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- =========================================================
+         OFFCANVAS: Quote help
+         ======================================================= -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="quoteHelp" aria-labelledby="quoteHelpLabel">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="quoteHelpLabel"><i class="bi bi-lightbulb"></i> Quote tips</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body small">
+        <ul class="mb-0 text-secondary">
+          <li>Be explicit about included services (loading help, straps, blankets, tail-lift).</li>
+          <li>For cross-border moves, clarify if customs paperwork is included.</li>
+          <li>Offer windows for pickup/delivery to help scheduling.</li>
+          <li>Share prior lane experience to build trust.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         OFFCANVAS: FAQ (quick view)
+         ======================================================= -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="faqPanel" aria-labelledby="faqLabel">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="faqLabel"><i class="bi bi-question-circle"></i> FAQ</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body small">
+        <p class="text-secondary">See the FAQ section below for more details. Highlights:</p>
+        <ul class="text-secondary">
+          <li>Accepting a quote creates a booking + chat thread.</li>
+          <li>In the MVP, quotes are not editable.</li>
+          <li>Keep sensitive info for the Messages thread after booking.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         SHARED TOAST
+         ======================================================= -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
+      <div id="toast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body" id="toastBody">Ready.</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         SHARED RIGHT SIDEBAR (optional detail preview)
+         ======================================================= -->
+    <aside id="sidePanel" class="offcanvas offcanvas-end" tabindex="-1" aria-labelledby="sidePanelLabel">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="sidePanelLabel">Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body" id="sidePanelBody">
+        <div class="text-secondary small">No content yet.</div>
+      </div>
+    </aside>
+
+    <!-- =========================================================
+         SCRIPTS
+         ======================================================= -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/common.js" defer></script>
+
+    <script>
+      // Page-local helpers (navigation only; all API logic is in assets/common.js)
+      (function(){
+        function qs(sel){ return document.querySelector(sel); }
+        function parseQuery(){
+          var out = {}, q = window.location.search || '';
+          if(q.indexOf('?')===0) q=q.slice(1);
+          if(!q) return out;
+          q.split('&').forEach(function(kv){
+            var p = kv.split('='), k = decodeURIComponent(p[0]||''), v = decodeURIComponent((p[1]||'').replace(/\+/g,' '));
+            if(k) out[k]=v;
+          });
+          return out;
+        }
+
+        // Year cosmetic
+        var y = document.getElementById('year'); if(y){ y.textContent = String((new Date()).getFullYear()); }
+
+        // Quick nav by ID
+        var btnGo = document.getElementById('btnGoShip');
+        var input = document.getElementById('goShipId');
+        if(btnGo && input){
+          btnGo.addEventListener('click', function(){
+            var id = (input.value||'').trim();
+            if(!id){ input.focus(); return; }
+            window.location.search = '?id=' + encodeURIComponent(id);
+          });
+          input.addEventListener('keydown', function(e){
+            if(e.key === 'Enter'){ e.preventDefault(); btnGo.click(); }
+          });
+        }
+
+        // Manual refresh button for quotes (common.js already refreshes on load & after submit)
+        var btnRefreshQuotes = document.getElementById('btnRefreshQuotes');
+        if(btnRefreshQuotes){
+          btnRefreshQuotes.addEventListener('click', function(){
+            // Cheap trick: change a no-op hash to trigger re-render flows if needed
+            try { window.location.hash = '#refresh-' + Date.now(); } catch(e){}
+            // common.js fetches quotes; here we just give a friendly toast via the global handler
+            // (The actual fetch/paint is already handled by renderQuotesList/loadAll in common.js)
+          });
+        }
+
+        // If opened without ?id, hint the user
+        var q = parseQuery();
+        if(!q.id){
+          // soft hint in placeholder area (will be replaced once user navigates)
+          var info = qs('#shipmentInfo');
+          if(info){
+            info.innerHTML =
+              '<div class="alert alert-dark border d-flex align-items-center gap-2 mb-0">'+
+                '<i class="bi bi-info-circle text-primary"></i>'+
+                '<div class="small">Open this page with <span class="kbd">?id=&lt;SHIPMENT_ID&gt;</span> or paste an ID in the box on the right.</div>'+
+              '</div>';
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

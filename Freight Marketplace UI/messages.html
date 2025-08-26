@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <!-- =========================================================
+         Duff Bros Freight — Messages (Per-booking Threads)
+         Fully compatible with assets/common.js & server.js
+         IDs used by JS:
+           - #messagesBox  : container for message bubbles (rendered by common.js on load + polling)
+           - #composerForm : form to send a message (local inline JS here)
+           - #composerText : textarea for message text
+           - #senderRole   : select role (shipper/transporter/admin)
+         Open with: messages.html?threadId=<THREAD_ID>
+         ======================================================= -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>Duff Bros Freight — Messages</title>
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+
+    <!-- Project theme -->
+    <link href="assets/styles.css" rel="stylesheet"/>
+
+    <link rel="icon" href="data:,"/>
+    <meta name="color-scheme" content="dark light"/>
+  </head>
+
+  <body class="bg-body">
+    <!-- =========================================================
+         NAVBAR (sticky, shared across pages)
+         ======================================================= -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
+      <div class="container">
+        <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="index.html">
+          <i class="bi bi-truck"></i>
+          <span>Duff Bros Freight</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fmNav" aria-controls="fmNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div id="fmNav" class="collapse navbar-collapse">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="loads.html"><i class="bi bi-box-seam"></i> Post Shipment</a></li>
+            <li class="nav-item"><a class="nav-link" href="bids.html"><i class="bi bi-cash-coin"></i> Quotes</a></li>
+            <li class="nav-item"><a class="nav-link" href="bookings.html"><i class="bi bi-journal-check"></i> Bookings</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="messages.html"><i class="bi bi-chat-text"></i> Messages</a></li>
+            <li class="nav-item"><a class="nav-link" href="admin.html"><i class="bi bi-shield-lock"></i> Admin</a></li>
+          </ul>
+
+          <!-- Shared quick controls -->
+          <div class="d-flex align-items-center gap-2">
+            <div class="input-group input-group-sm" style="width: 280px">
+              <span class="input-group-text">API</span>
+              <input id="baseUrl" class="form-control" value="http://localhost:3000" aria-label="API base URL"/>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" id="btnHealth">
+              <i class="bi bi-activity"></i> Health
+            </button>
+            <button class="btn btn-sm btn-danger" id="btnSeed">
+              <i class="bi bi-lightning-charge"></i> Seed
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- =========================================================
+         HERO
+         ======================================================= -->
+    <header class="py-5 hero-slate">
+      <div class="container">
+        <div class="row align-items-center g-4">
+          <div class="col-12 col-xl-7 text-white">
+            <span class="badge bg-white text-dark mb-3">Messages</span>
+            <h1 class="display-5 fw-bold lh-sm">Per-booking message threads</h1>
+            <p class="lead text-white-50 mt-2">
+              Keep shippers, transport ops, and drivers aligned. When you accept a quote,
+              a dedicated thread opens automatically for that booking.
+            </p>
+            <div class="d-flex flex-wrap gap-3 mt-1 small text-white-75">
+              <span><i class="bi bi-paperclip"></i> Attach files (coming soon)</span>
+              <span><i class="bi bi-badge-hd"></i> Message history</span>
+              <span><i class="bi bi-bell"></i> Real-time updates (polling)</span>
+            </div>
+
+            <!-- Status strip -->
+            <div class="mt-4 small">
+              <span class="text-white-50">API base: </span>
+              <span class="font-monospace" id="statusBase">http://localhost:3000</span>
+              <span class="mx-2">•</span>
+              <span class="text-white-50">Open with:</span>
+              <span class="font-monospace">messages.html?threadId=&lt;THREAD_ID&gt;</span>
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-5">
+            <div class="card border-0 shadow-medium">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-info-circle text-primary"></i>
+                  <h2 class="h5 m-0">Tips</h2>
+                </div>
+                <ul class="mb-0 small text-white-50">
+                  <li>Use the role selector to send as shipper, transporter, or admin.</li>
+                  <li>For customs, share MRN/EAD references and expected border times.</li>
+                  <li>Agree a single source of truth for ETAs (this thread!).</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div><!-- /row -->
+      </div>
+    </header>
+
+    <!-- =========================================================
+         LAYOUT: Threads list (left) + Active thread (right)
+         ======================================================= -->
+    <main class="container py-4">
+      <div class="row g-4">
+        <!-- LEFT: THREADS NAV (placeholder list for demo) -->
+        <aside class="col-12 col-xl-4">
+          <div class="card border-0 shadow-soft h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+              <span class="fw-semibold"><i class="bi bi-inboxes"></i> Threads</span>
+              <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#threadsHelp"><i class="bi bi-question-circle"></i></button>
+            </div>
+            <div class="card-body">
+              <div class="input-group mb-3">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input id="threadSearch" class="form-control" placeholder="Search (demo – client-side only)"/>
+              </div>
+
+              <div class="vstack gap-2">
+                <!-- Demo threads list (static examples). In practice, navigate here from Bookings. -->
+                <a class="border rounded p-3 text-decoration-none d-flex align-items-center gap-3 thread-item"
+                   href="messages.html?threadId=demo-thread-001">
+                  <div class="avatar">DB</div>
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold text-white">Booking #001: London → Berlin</div>
+                    <div class="small text-secondary">Last message · 10:12</div>
+                  </div>
+                  <span class="badge text-bg-primary">OPEN</span>
+                </a>
+
+                <a class="border rounded p-3 text-decoration-none d-flex align-items-center gap-3 thread-item"
+                   href="messages.html?threadId=demo-thread-002">
+                  <div class="avatar">TE</div>
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold text-white">Booking #002: Manchester → Paris</div>
+                    <div class="small text-secondary">Last message · Yesterday</div>
+                  </div>
+                  <span class="badge text-bg-success">DELIVERED</span>
+                </a>
+
+                <a class="border rounded p-3 text-decoration-none d-flex align-items-center gap-3 thread-item"
+                   href="messages.html?threadId=demo-thread-003">
+                  <div class="avatar">FM</div>
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold text-white">Booking #003: Bristol → Vienna</div>
+                    <div class="small text-secondary">Last message · 2d</div>
+                  </div>
+                  <span class="badge text-bg-secondary">CLOSED</span>
+                </a>
+
+                <div class="text-secondary small mt-2">
+                  In the live flow, click <b>Open chat</b> on a booking card to land directly in the correct thread.
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT: ACTIVE THREAD -->
+        <section class="col-12 col-xl-8">
+          <div class="card border-0 shadow-soft h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-3">
+                <div class="avatar"><i class="bi bi-chat-dots"></i></div>
+                <div>
+                  <div class="fw-semibold">Active thread</div>
+                  <div class="small text-secondary">
+                    id: <span class="code" id="activeThreadId">—</span>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#shortcutsPanel">
+                  <i class="bi bi-keyboard"></i> Shortcuts
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#attachmentsPanel">
+                  <i class="bi bi-paperclip"></i> Attachments
+                </button>
+              </div>
+            </div>
+
+            <!-- MESSAGE HISTORY -->
+            <div class="card-body">
+              <div id="messagesBox" class="msg-wrap p-3 scroll-shadow" aria-live="polite" aria-busy="true">
+                <!-- Filled by assets/common.js (GET /api/messages?threadId=...) -->
+                <div class="placeholder-wave">
+                  <div class="mb-2"><span class="placeholder col-4"></span></div>
+                  <div class="mb-2"><span class="placeholder col-8"></span></div>
+                  <div class="mb-2"><span class="placeholder col-5"></span></div>
+                </div>
+              </div>
+
+              <!-- COMPOSER -->
+              <form id="composerForm" class="mt-3">
+                <div class="row g-2 align-items-end">
+                  <div class="col-12 col-md-3">
+                    <label class="form-label small">Send as</label>
+                    <select id="senderRole" class="form-select">
+                      <option value="shipper">Shipper</option>
+                      <option value="transporter">Transporter</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <div class="col-12 col-md-9">
+                    <label class="form-label small d-flex align-items-center justify-content-between">
+                      <span>Message</span>
+                      <span class="text-secondary small">Enter to send · Shift+Enter = newline</span>
+                    </label>
+                    <textarea id="composerText" class="form-control" rows="3" placeholder="Type a message…" required></textarea>
+                  </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                  <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i> Send</button>
+                  <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#attachmentsPanel">
+                    <i class="bi bi-paperclip"></i> Add attachment
+                  </button>
+                  <button class="btn btn-outline-secondary" type="reset"><i class="bi bi-eraser"></i> Clear</button>
+                </div>
+
+                <div class="small text-secondary mt-2">
+                  Attachments are coming soon. For now, share links to PoD, photos, or docs here.
+                </div>
+              </form>
+            </div>
+
+            <div class="card-footer small text-secondary">
+              Message retention: Demo data resets when you click <b>Seed</b> in the navbar.
+            </div>
+          </div>
+        </section>
+      </div><!-- /row -->
+    </main>
+
+    <!-- =========================================================
+         HTML TEMPLATES (optional helpers)
+         ======================================================= -->
+    <section class="container py-4">
+      <div class="card">
+        <div class="card-header fw-semibold">HTML templates (optional)</div>
+        <div class="card-body">
+          <p class="text-secondary small mb-3">
+            These are optional, safe to keep in-page. Rendering is handled already by <code>assets/common.js</code>.
+          </p>
+
+          <!-- Message item -->
+          <template id="tpl-msg-item">
+            <div class="d-flex flex-column align-items-end">
+              <div class="msg-bubble me">Message text…</div>
+              <div class="msg-meta">2025-08-16 12:00 · by shipper</div>
+            </div>
+          </template>
+
+          <!-- Thread list item -->
+          <template id="tpl-thread-item">
+            <a class="border rounded p-3 text-decoration-none d-flex align-items-center gap-3 thread-item" href="#">
+              <div class="avatar">DB</div>
+              <div class="flex-grow-1">
+                <div class="fw-semibold text-white">Booking #XXX: A → B</div>
+                <div class="small text-secondary">Last message · time</div>
+              </div>
+              <span class="badge text-bg-primary">OPEN</span>
+            </a>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         FAQ / HELP
+         ======================================================= -->
+    <section class="container pb-5">
+      <div class="row g-4">
+        <div class="col-12 col-xl-6">
+          <div class="card h-100">
+            <div class="card-header fw-semibold">FAQ</div>
+            <div class="card-body">
+              <div class="mb-3">
+                <h3 class="h6">How do I get a thread ID?</h3>
+                <p class="text-secondary small mb-0">
+                  Accept a quote on the <b>Quotes</b> page. The system creates a booking and opens a thread, linking it from the booking card.
+                </p>
+              </div>
+              <div class="mb-3">
+                <h3 class="h6">Can I add images or PDFs?</h3>
+                <p class="text-secondary small mb-0">
+                  Attachments are coming soon. For now, paste links. The API will accept attachments in a later iteration.
+                </p>
+              </div>
+              <div class="mb-0">
+                <h3 class="h6">Who can see the thread?</h3>
+                <p class="text-secondary small mb-0">
+                  The shipper, the accepted transporter, and admins. Use the role selector to simulate different participants.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next steps -->
+        <div class="col-12 col-xl-6">
+          <div class="card h-100">
+            <div class="card-header fw-semibold">Next steps</div>
+            <div class="card-body">
+              <ol class="mb-0">
+                <li>Go to <b>Quotes</b> and accept a bid.</li>
+                <li>Open <b>Bookings</b> and click <b>Open chat</b>.</li>
+                <li>Share ETAs and updates here until delivery; attach PoD at completion.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div><!-- /row -->
+    </section>
+
+    <!-- =========================================================
+         FOOTER
+         ======================================================= -->
+    <footer class="border-top py-4">
+      <div class="container small text-secondary d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>© <span id="year">2025</span> Duff Bros Freight — Messages</div>
+        <div class="d-flex align-items-center gap-3">
+          <a class="link-secondary text-decoration-none" href="bookings.html">Bookings</a>
+          <a class="link-secondary text-decoration-none" href="bids.html">Quotes</a>
+          <a class="link-secondary text-decoration-none" href="loads.html">Loads</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- =========================================================
+         OFFCANVAS: Threads help
+         ======================================================= -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="threadsHelp" aria-labelledby="threadsHelpLabel">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="threadsHelpLabel"><i class="bi bi-question-circle"></i> Threads help</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body small">
+        <p class="text-secondary">
+          Threads map to bookings. When a quote is accepted, a booking is created and a private thread opens for that job.
+        </p>
+        <ul class="text-secondary mb-0">
+          <li>Navigate from the booking card (Open chat) to avoid copy/pasting IDs.</li>
+          <li>In production, you’ll see a live list of your threads on the left.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         OFFCANVAS: Shortcuts
+         ======================================================= -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="shortcutsPanel" aria-labelledby="shortcutsLabel">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="shortcutsLabel"><i class="bi bi-keyboard"></i> Keyboard shortcuts</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body small">
+        <ul class="mb-0 text-secondary">
+          <li><span class="kbd">Enter</span> — Send</li>
+          <li><span class="kbd">Shift</span> + <span class="kbd">Enter</span> — New line</li>
+          <li><span class="kbd">Ctrl/Cmd</span> + <span class="kbd">K</span> — Focus search</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         OFFCANVAS: Attachments (stub)
+         ======================================================= -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="attachmentsPanel" aria-labelledby="attachmentsLabel">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="attachmentsLabel"><i class="bi bi-paperclip"></i> Attachments</h5>
+        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body small">
+        <p class="text-secondary">
+          File uploads will land here in the full app (images, PDFs, PoD). For the MVP, paste links in messages.
+        </p>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">Close</button>
+          <button class="btn btn-primary btn-sm disabled">Upload (coming soon)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         SHARED RIGHT SIDEBAR (optional preview)
+         ======================================================= -->
+    <aside id="sidePanel" class="offcanvas offcanvas-end" tabindex="-1" aria-labelledby="sidePanelLabel">
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="sidePanelLabel">Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body" id="sidePanelBody">
+        <div class="text-secondary small">No content yet.</div>
+      </div>
+    </aside>
+
+    <!-- =========================================================
+         SHARED TOAST
+         ======================================================= -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
+      <div id="toast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body" id="toastBody">Ready.</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         SCRIPTS
+         ======================================================= -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/common.js" defer></script>
+
+    <script>
+      // Page-local messaging: sending messages to the active thread.
+      // Reading is handled by assets/common.js (auto-load + polling when ?threadId=...).
+      (function(){
+        'use strict';
+
+        // ------------- Utilities -------------
+        function qs(sel){ return document.querySelector(sel); }
+        function parseQuery(){
+          var out = {}, q = window.location.search || '';
+          if(q.indexOf('?') === 0) q = q.slice(1);
+          if(!q) return out;
+          q.split('&').forEach(function(kv){
+            var p = kv.split('=');
+            var k = decodeURIComponent(p[0] || '');
+            var v = decodeURIComponent((p[1] || '').replace(/\+/g,' '));
+            if(k) out[k] = v;
+          });
+          return out;
+        }
+        function base(){ try { return qs('#baseUrl').value || localStorage.getItem('duff.baseUrl') || 'http://localhost:3000'; } catch(e){ return 'http://localhost:3000'; } }
+        function toast(msg){
+          var el = qs('#toast'), body = qs('#toastBody');
+          if(!el || !body || !window.bootstrap || !bootstrap.Toast){ alert(msg); return; }
+          body.textContent = msg;
+          new bootstrap.Toast(el).show();
+        }
+        function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; }); }
+
+        // ------------- Init -------------
+        var query = parseQuery();
+        var threadId = query.threadId || '';
+        var activeIdSpan = qs('#activeThreadId');
+        if(activeIdSpan) activeIdSpan.textContent = threadId ? threadId : '—';
+
+        // Focus search with Ctrl/Cmd+K
+        document.addEventListener('keydown', function(e){
+          if((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')){
+            e.preventDefault();
+            var s = qs('#threadSearch'); if(s){ s.focus(); s.select && s.select(); }
+          }
+        });
+
+        // ------------- Composer behavior -------------
+        var form = qs('#composerForm');
+        var textEl = qs('#composerText');
+        var roleEl = qs('#senderRole');
+        var box = qs('#messagesBox');
+
+        // Enter to send; Shift+Enter newline
+        if(textEl){
+          textEl.addEventListener('keydown', function(e){
+            if(e.key === 'Enter' && !e.shiftKey){
+              e.preventDefault();
+              if(form) form.requestSubmit ? form.requestSubmit() : form.submit();
+            }
+          });
+        }
+
+        function appendLocalEcho(role, text){
+          // Non-authoritative local echo; server will send canonical copy via polling
+          if(!box) return;
+          var who = String(role || 'user');
+          var cls = (who === 'shipper' || who === 'user') ? 'me' : 'them';
+          var when = new Date().toISOString().replace('T',' ').replace('Z','');
+          var html =
+            '<div class="d-flex flex-column ' + (cls === 'me' ? 'align-items-end' : '') + '">' +
+              '<div class="msg-bubble ' + cls + '">' + escapeHtml(text) + '</div>' +
+              '<div class="msg-meta">' + when + ' · ' + escapeHtml(who) + '</div>' +
+            '</div>';
+          box.insertAdjacentHTML('beforeend', html);
+          try { box.scrollTop = box.scrollHeight; } catch(e){}
+        }
+
+        function sendMessage(payload){
+          var url = base() + '/api/messages';
+          return fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(payload)
+          }).then(function(r){
+            if(!r.ok) throw new Error('POST /api/messages -> ' + r.status);
+            return r.json();
+          });
+        }
+
+        if(form){
+          form.addEventListener('submit', function(e){
+            e.preventDefault();
+            if(!threadId){ toast('No threadId in URL'); return; }
+            var text = (textEl && textEl.value || '').trim();
+            var role = (roleEl && roleEl.value) || 'shipper';
+            if(!text){ textEl && textEl.focus(); return; }
+
+            // Local echo (optional) for instant feedback
+            appendLocalEcho(role, text);
+
+            sendMessage({ threadId: threadId, text: text, senderRole: role })
+              .then(function(){
+                textEl.value = '';
+                textEl.focus();
+                toast('Message sent');
+                // The polling in common.js will fetch canonical message list shortly.
+              })
+              .catch(function(err){
+                toast(err.message || 'Failed to send');
+              });
+          });
+        }
+
+        // Footer year cosmetic
+        var y = document.getElementById('year'); if(y){ y.textContent = String((new Date()).getFullYear()); }
+
+        // Soft validation hint if opened without ?threadId
+        if(!threadId){
+          if(box){
+            box.innerHTML =
+              '<div class="alert alert-dark border d-flex align-items-center gap-2 mb-0">'+
+                '<i class="bi bi-info-circle text-primary"></i>'+
+                '<div class="small">Open with <span class="kbd">?threadId=&lt;THREAD_ID&gt;</span> or use <b>Open chat</b> on a booking card.</div>'+
+              '</div>';
+          }
+        }
+      })();
+    </script>
+  </body>
+</html>

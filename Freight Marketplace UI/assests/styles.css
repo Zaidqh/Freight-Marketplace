@@ -1,0 +1,338 @@
+/* ==========================================================================
+   Duff Bros Freight — Global UI Styles
+   Works with Bootstrap 5 (dark theme). Keep JS ASCII-only and CSS variable-driven.
+   File: assets/styles.css
+   ========================================================================== */
+
+/* 1) CSS Variables & Theme Tweaks
+   -------------------------------------------------------------------------- */
+:root {
+  --brand: #4f46e5;                /* Indigo 600 */
+  --brand-600: #4f46e5;
+  --brand-500: #6366f1;
+  --brand-400: #818cf8;
+  --brand-300: #a5b4fc;
+
+  --slate-900: #0f172a;
+  --slate-800: #1f2937;
+  --slate-700: #334155;
+  --slate-600: #475569;
+  --slate-500: #64748b;
+  --slate-400: #94a3b8;
+  --slate-300: #cbd5e1;
+
+  --radius-lg: 1rem;
+  --radius-md: .75rem;
+  --radius-sm: .5rem;
+
+  --shadow-sm: 0 6px 18px rgba(0,0,0,.18);
+  --shadow-md: 0 10px 24px rgba(0,0,0,.22);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,.28);
+}
+
+/* Prefer dark theme defaults */
+:root[data-bs-theme="dark"] {
+  --bs-body-bg: var(--slate-900);
+  --bs-body-color: #e5e7eb;
+  --bs-border-color: rgba(148,163,184,.28);
+  --bs-border-color-translucent: rgba(148,163,184,.22);
+  --bs-card-bg: #0b1222; /* slightly deeper than body for separation */
+  --bs-link-color: var(--brand-400);
+  --bs-link-hover-color: var(--brand-300);
+  --bs-primary: var(--brand-600);
+  --bs-secondary: var(--slate-500);
+  --bs-success: #22c55e;
+  --bs-info: #38bdf8;
+  --bs-warning: #f59e0b;
+  --bs-danger: #ef4444;
+}
+
+/* 2) Base / Typography / Utilities
+   -------------------------------------------------------------------------- */
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+small, .small { color: var(--bs-secondary-color, #94a3b8); }
+
+.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: rgba(99,102,241,.12);
+  color: #c7d2fe;
+  padding: .15rem .4rem;
+  border: 1px solid rgba(99,102,241,.25);
+  border-radius: .35rem;
+}
+
+/* Rounded helpers */
+.rounded-xl { border-radius: var(--radius-lg) !important; }
+.rounded-lg { border-radius: var(--radius-md) !important; }
+.rounded-md { border-radius: var(--radius-sm) !important; }
+
+/* Shadows */
+.shadow-soft   { box-shadow: var(--shadow-sm) !important; }
+.shadow-medium { box-shadow: var(--shadow-md) !important; }
+.shadow-large  { box-shadow: var(--shadow-lg) !important; }
+
+/* Scroll area subtle inner shadow */
+.scroll-shadow { box-shadow: inset 0 6px 6px -6px rgba(0,0,0,.35); }
+
+/* Hero gradients (replace inline style="background:..." with these if you like) */
+.hero-slate {
+  background: linear-gradient(135deg, var(--slate-900), var(--slate-800));
+}
+.hero-indigo {
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(79,70,229,.25), transparent 60%),
+              linear-gradient(135deg, #0b1222, #0f172a 60%, #111827);
+}
+
+/* 3) Navbar & Footer
+   -------------------------------------------------------------------------- */
+.navbar.bg-body-tertiary {
+  background-color: rgba(11, 18, 34, .75) !important;
+  border-color: var(--bs-border-color-translucent) !important;
+  backdrop-filter: saturate(120%) blur(10px);
+}
+.navbar .navbar-brand { letter-spacing: .2px; }
+.navbar .input-group-text { background: rgba(148,163,184,.12); border: 1px solid var(--bs-border-color-translucent); }
+.navbar .form-control {
+  background: rgba(148,163,184,.08);
+  border: 1px solid var(--bs-border-color-translucent);
+  color: #e5e7eb;
+}
+footer { background: rgba(2,6,23,.35); }
+
+/* 4) Cards / Buttons / Badges
+   -------------------------------------------------------------------------- */
+.card {
+  background: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color-translucent);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.card:hover { border-color: rgba(129,140,248,.35); }
+
+.card-header {
+  background: rgba(148,163,184,.08);
+  border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+
+.btn {
+  border-radius: .65rem;
+  letter-spacing: .2px;
+}
+.btn-primary {
+  background: linear-gradient(180deg, var(--brand-500), var(--brand-600));
+  border-color: var(--brand-600);
+}
+.btn-primary:hover { background: linear-gradient(180deg, var(--brand-400), var(--brand-600)); }
+.btn-outline-secondary {
+  border-color: var(--bs-border-color-translucent);
+  color: var(--bs-body-color);
+}
+.btn-outline-secondary:hover { background: rgba(148,163,184,.12); }
+
+/* Soft / Ghost variants (extras) */
+.btn-soft-primary {
+  background: rgba(99,102,241,.15); color: #c7d2fe; border: 1px solid rgba(99,102,241,.35);
+}
+.btn-ghost { background: transparent; border-color: transparent; color: var(--bs-body-color); }
+.btn-ghost:hover { background: rgba(148,163,184,.08); }
+
+.badge { border-radius: .6rem; }
+.badge-soft {
+  background: rgba(99,102,241,.15);
+  border: 1px solid rgba(99,102,241,.35);
+}
+.badge-pill { border-radius: 999px; }
+
+/* 5) Forms
+   -------------------------------------------------------------------------- */
+.form-control, .form-select {
+  background: rgba(148,163,184,.08);
+  border: 1px solid var(--bs-border-color-translucent);
+  color: #e5e7eb;
+}
+.form-control:focus, .form-select:focus {
+  border-color: rgba(99,102,241,.55);
+  box-shadow: 0 0 0 .2rem rgba(99,102,241,.25);
+}
+.input-group .form-control { border-left: none; }
+.input-group .input-group-text { border-right: none; }
+
+/* Checkboxes */
+.form-check-input {
+  background-color: rgba(148,163,184,.15);
+  border-color: var(--bs-border-color-translucent);
+}
+.form-check-input:checked {
+  background-color: var(--brand-600);
+  border-color: var(--brand-600);
+}
+
+/* 6) Tables
+   -------------------------------------------------------------------------- */
+.table {
+  --tbl-row-hover: rgba(148,163,184,.08);
+}
+.table thead th {
+  font-weight: 700;
+  color: #cbd5e1;
+  border-bottom: 1px solid var(--bs-border-color-translucent) !important;
+}
+.table tbody tr:hover { background: var(--tbl-row-hover); }
+.table-dark.table-hover > tbody > tr:hover > * { --bs-table-bg-state: var(--tbl-row-hover); }
+
+/* 7) Offcanvas / Modal / Toast polish
+   -------------------------------------------------------------------------- */
+.offcanvas, .modal-content {
+  background: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color-translucent);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+.offcanvas-header, .modal-header {
+  background: rgba(148,163,184,.08);
+  border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+.toast.text-bg-dark {
+  background: rgba(2,6,23,.92) !important;
+  border: 1px solid var(--bs-border-color-translucent);
+  box-shadow: var(--shadow-md);
+}
+
+/* 8) Placeholders / Skeletons
+   -------------------------------------------------------------------------- */
+.placeholder { display: inline-block; min-height: .9em; border-radius: .35rem; background: rgba(148,163,184,.18); }
+.placeholder-wave { position: relative; overflow: hidden; }
+.placeholder-wave .placeholder::before,
+.placeholder-wave::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.08) 45%,
+    rgba(255,255,255,0) 90%);
+  transform: translateX(-100%);
+  animation: wave 1.6s infinite;
+}
+@keyframes wave {
+  0%   { transform: translateX(-100%); }
+  60%  { transform: translateX(0%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 9) Messages UI (shared with messages.html)
+   -------------------------------------------------------------------------- */
+.msg-wrap {
+  min-height: 460px;
+  max-height: 60vh;
+  overflow: auto;
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color-translucent);
+  border-radius: var(--radius-md);
+}
+@media (min-width: 1200px) {
+  .msg-wrap { max-height: 66vh; }
+}
+.msg-bubble {
+  border: 1px solid var(--bs-border-color-translucent);
+  border-radius: 1rem;
+  padding: .6rem .75rem;
+  max-width: 68ch;
+  line-height: 1.35;
+  word-wrap: break-word;
+}
+.msg-bubble.me   { background: rgba(13,110,253,.08); }
+.msg-bubble.them { background: rgba(108,117,125,.1); }
+.msg-meta {
+  font-size: .8rem;
+  color: var(--bs-secondary-color, #94a3b8);
+  margin-top: .25rem;
+}
+.avatar {
+  height: 36px; width: 36px; border-radius: 50%;
+  background: var(--slate-800);
+  display: inline-grid; place-items: center;
+  font-weight: 700; color: #cbd5e1;
+}
+
+/* 10) Lists-as-grid (shipments, bookings, quotes)
+   -------------------------------------------------------------------------- */
+ul.row.g-3.list-unstyled > li .card { transition: transform .18s ease, border-color .18s ease; }
+ul.row.g-3.list-unstyled > li .card:hover { transform: translateY(-2px); }
+
+/* Quote list fine-tuning (bids.html) */
+#quotesList .card .h5 { font-weight: 800; letter-spacing: .2px; }
+#quotesList .badge { text-transform: uppercase; }
+
+/* 11) Status badges (extra clarity)
+   -------------------------------------------------------------------------- */
+.badge.text-bg-primary  { background: linear-gradient(180deg, #3b82f6, #2563eb) !important; }
+.badge.text-bg-success  { background: linear-gradient(180deg, #22c55e, #16a34a) !important; }
+.badge.text-bg-warning  { background: linear-gradient(180deg, #f59e0b, #d97706) !important; color: #111 !important; }
+.badge.text-bg-secondary{ background: linear-gradient(180deg, #6b7280, #4b5563) !important; }
+.badge.text-bg-danger   { background: linear-gradient(180deg, #ef4444, #dc2626) !important; }
+.badge.text-bg-info     { background: linear-gradient(180deg, #38bdf8, #0ea5e9) !important; color: #0b1222 !important; }
+
+/* 12) Metrics / Admin bits
+   -------------------------------------------------------------------------- */
+.metric {
+  border: 1px solid var(--bs-border-color-translucent);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  background: linear-gradient(180deg, rgba(99,102,241,.08), rgba(99,102,241,.02));
+}
+.metric .val { font-size: 1.6rem; font-weight: 800; letter-spacing: .3px; }
+
+.kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: rgba(148,163,184,.12);
+  border: 1px solid var(--bs-border-color-translucent);
+  padding: .15rem .45rem;
+  border-radius: .35rem;
+}
+
+/* 13) Links / subtle accents
+   -------------------------------------------------------------------------- */
+a.link-secondary, .link-secondary {
+  color: var(--slate-300) !important;
+  opacity: .85;
+  transition: opacity .15s ease;
+}
+a.link-secondary:hover, .link-secondary:hover { opacity: 1; }
+
+a.btn-outline-warning, .btn-outline-warning { color: #fcd34d; border-color: rgba(252,211,77,.35); }
+a.btn-outline-warning:hover, .btn-outline-warning:hover { background: rgba(252,211,77,.12); }
+
+/* 14) Helpers for spacing/sections
+   -------------------------------------------------------------------------- */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(148,163,184,0), rgba(148,163,184,.35), rgba(148,163,184,0));
+  margin: 1.5rem 0;
+}
+.band {
+  background: rgba(148,163,184,.06);
+  border-top: 1px solid var(--bs-border-color-translucent);
+  border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+
+/* 15) Animations (micro-interactions)
+   -------------------------------------------------------------------------- */
+@keyframes pop { from { transform: scale(.98); opacity: .4; } to { transform: scale(1); opacity: 1; } }
+.pop-in { animation: pop .18s ease-out; }
+
+/* 16) Print minimal
+   -------------------------------------------------------------------------- */
+@media print {
+  .navbar, footer, .offcanvas, .modal, .toast, .btn, .input-group, .form-control, .form-select { display: none !important; }
+  .card { border-color: #999 !important; box-shadow: none !important; }
+}
+
+/* 17) Optional: replace hero inline styles on pages
+   -------------------------------------------------------------------------- */
+/* You can swap:
+     <section class="py-5" style="background: linear-gradient(135deg,#0f172a,#1f2937);">
+   to:
+     <section class="py-5 hero-slate">
+*/
