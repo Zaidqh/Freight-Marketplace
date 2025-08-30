@@ -45,14 +45,15 @@
                     <li class="nav-item">
                         <a class="nav-link" href="marketplace.html">Marketplace</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="bids.html">Quotes</a>
-                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link" href="bookings.html">Bookings</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" href="messages.html" aria-current="page">Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="admin.html">Admin</a>
@@ -86,13 +87,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="header-visual">
-                            <div class="header-icon">
-                                <i class="bi bi-chat-text" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
         </section>
@@ -100,60 +95,45 @@
         <!-- Main Content -->
         <section class="main-content py-5">
             <div class="container">
-                <!-- Tips Card -->
-                <div class="row justify-content-center mb-5">
-                    <div class="col-lg-8">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center gap-2 mb-3">
-                                    <i class="bi bi-info-circle text-primary" aria-hidden="true"></i>
-                                    <h5 class="mb-0">Tips</h5>
-                                </div>
-                                <ul class="mb-0 small text-muted">
-                                    <li>Use the role selector to send as shipper, transporter, or admin.</li>
-                                    <li>For customs, share MRN/EAD references and expected border times.</li>
-                                    <li>Include pickup/delivery instructions and contact details.</li>
-                                    <li>Update on delays or route changes promptly.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Messages Container -->
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <div class="card">
-                            <div class="card-header">
+                <div class="row g-4">
+                    <!-- Threads Sidebar -->
+                    <aside class="col-lg-4">
+                        <div class="card h-100" style="min-height: 70vh;">
+                            <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">
-                                    <i class="bi bi-chat-dots me-2"></i>
-                                    Messages
+                                    <i class="bi bi-chat-left-text me-2"></i>
+                                    Chats
                                 </h5>
+                                <button class="btn btn-outline-secondary btn-sm" id="refreshThreads" title="Refresh">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
                             </div>
                             <div class="card-body p-0">
-                                <!-- Messages Box -->
-                                <div id="messagesBox" class="msg-wrap p-3 scroll-shadow" aria-live="polite" aria-busy="true">
-                                    <!-- Messages will be populated here by JavaScript -->
+                                <div id="threadsList" class="list-group list-group-flush">
+                                    <!-- Threads injected here -->
                                 </div>
+                            </div>
+                        </div>
+                    </aside>
 
-                                <!-- Composer Form -->
-                                <form id="composerForm" class="mt-3 p-3 border-top">
-                                    <div class="row g-3">
-                                        <div class="col-md-3">
-                                            <select id="senderRole" class="form-select">
-                                                <option value="shipper">Shipper</option>
-                                                <option value="transporter">Transporter</option>
-                                                <option value="admin">Admin</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <div class="input-group">
-                                                <textarea id="composerText" class="form-control" rows="3" placeholder="Type a message…" required></textarea>
-                                                <button class="btn btn-primary" type="submit">
-                                                    <i class="bi bi-send"></i>
-                                                </button>
-                                            </div>
-                                        </div>
+                    <!-- Chat Pane -->
+                    <div class="col-lg-8">
+                        <div class="card h-100" style="min-height: 70vh;">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0" id="currentThreadName">
+                                    <i class="bi bi-chat-dots me-2"></i>
+                                    Select a conversation
+                                </h5>
+                                <small class="text-muted" id="currentThreadMeta"></small>
+                            </div>
+                            <div class="card-body p-0 d-flex flex-column">
+                                <div id="messagesBox" class="flex-grow-1 p-3 msg-wrap" aria-live="polite" aria-busy="true"></div>
+                                <form id="messageForm" class="border-top p-3">
+                                    <div class="input-group">
+                                        <textarea id="messageInput" class="form-control" rows="2" placeholder="Type a message…" required></textarea>
+                                        <button class="btn btn-primary" type="submit" title="Send">
+                                            <i class="bi bi-send"></i>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -197,7 +177,7 @@
                         <li><a href="#">About Us</a></li>
                         <li><a href="#">Careers</a></li>
                         <li><a href="#">Press</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-2 col-md-6">

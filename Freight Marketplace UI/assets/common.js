@@ -608,28 +608,116 @@
   }
 
   function bootMessages() {
+    var threadsList = qs('#threadsList');
     var box = qs('#messagesBox');
-    if (!box) return;
-    var query = parseQuery();
-    var threadId = query.threadId || '';
+    var input = qs('#messageInput');
+    var form = qs('#messageForm');
+    var currentNameEl = qs('#currentThreadName');
+    var currentMetaEl = qs('#currentThreadMeta');
+    if (!threadsList || !box || !input || !form) return;
 
-    // Only load when threadId is provided; otherwise allow page’s local echo to run
-    if (!threadId) return;
+    // Demo threads (persistable)
+    var demoThreads = [
+      { id: 't1', name: 'ACME Electronics', last: 'Need ETA update', meta: 'Shipment #1 • London → Paris' },
+      { id: 't2', name: 'EuroFresh Foods', last: 'Temp control confirmed', meta: 'Reefer • Amsterdam → Berlin' },
+      { id: 't3', name: 'BuildCo Ltd', last: 'Pickup window 9–11am', meta: 'Machinery • Manchester → Leeds' }
+    ];
 
-    http('GET', '/api/messages?threadId=' + encodeURIComponent(threadId) + '&limit=200').then(function (res) {
-      var list = (res && res.data) ? res.data : [];
-      renderMessages(box, list);
-    }).catch(function (e) { console.log(e); });
+    var storageKeyMsgs = 'duff.messages.threads';
+    var storageKeyCur = 'duff.messages.current';
 
-    // Optional: light polling (comment out if not wanted)
-    var pollMs = 5000, handle = setInterval(function () {
-      http('GET', '/api/messages?threadId=' + encodeURIComponent(threadId) + '&limit=200').then(function (res) {
-        var list = (res && res.data) ? res.data : [];
-        renderMessages(box, list);
-      }).catch(function () {});
-    }, pollMs);
-    // stop polling on unload
-    window.addEventListener('beforeunload', function(){ try { clearInterval(handle); } catch(e){} });
+    function loadAllThreads() {
+      try {
+        var raw = localStorage.getItem(storageKeyMsgs);
+        if (!raw) {
+          // seed with demo content
+          var seed = {
+            t1: [
+              { who: 'them', text: 'Hi, can you share ETA for delivery?', when: now() },
+              { who: 'me', text: 'ETA 14:30 local. Traffic clear.', when: now() }
+            ],
+            t2: [
+              { who: 'them', text: 'Please confirm reefer at 4°C.', when: now() },
+              { who: 'me', text: 'Confirmed: 4°C set and monitored.', when: now() }
+            ],
+            t3: [
+              { who: 'them', text: 'Loader available 9–11am. OK?', when: now() },
+              { who: 'me', text: 'Works. Driver will be on site 9:15.', when: now() }
+            ]
+          };
+          localStorage.setItem(storageKeyMsgs, JSON.stringify(seed));
+          return seed;
+        }
+        return JSON.parse(raw);
+      } catch (e) { return {}; }
+    }
+
+    function now() {
+      var d = new Date();
+      return d.toISOString().replace('T', ' ').replace('Z', '');
+    }
+
+    var messagesByThread = loadAllThreads();
+    var currentId = localStorage.getItem(storageKeyCur) || 't1';
+
+    function renderThreads() {
+      threadsList.innerHTML = demoThreads.map(function (t) {
+        var active = (t.id === currentId) ? ' active' : '';
+        return (
+          '<button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start thread' + active + '" data-id="' + t.id + '">' +
+            '<div class="me-auto">' +
+              '<div class="fw-semibold">' + escapeHtml(t.name) + '</div>' +
+              '<div class="small text-secondary">' + escapeHtml(t.last) + '</div>' +
+            '</div>' +
+            '<span class="badge rounded-pill text-bg-secondary">' + (messagesByThread[t.id] ? messagesByThread[t.id].length : 0) + '</span>' +
+          '</button>'
+        );
+      }).join('');
+    }
+
+    function renderCurrent() {
+      var meta = demoThreads.find(function(t){ return t.id === currentId; });
+      currentNameEl.innerHTML = '<i class="bi bi-chat-dots me-2"></i>' + (meta ? escapeHtml(meta.name) : 'Conversation');
+      currentMetaEl.textContent = meta ? meta.meta : '';
+      var list = messagesByThread[currentId] || [];
+      box.innerHTML = list.map(function (m) {
+        var cls = (String(m.who) === 'me') ? 'me' : 'them';
+        return (
+          '<div class="d-flex flex-column ' + (cls === 'me' ? 'align-items-end' : '') + '">' +
+            '<div class="msg-bubble ' + cls + '">' + escapeHtml(m.text || '') + '</div>' +
+            '<div class="msg-meta">' + escapeHtml(m.when || '') + '</div>' +
+          '</div>'
+        );
+      }).join('');
+      try { box.scrollTop = box.scrollHeight; } catch (e) {}
+    }
+
+    threadsList.addEventListener('click', function (ev) {
+      var t = ev.target.closest('.thread');
+      if (!t) return;
+      currentId = t.getAttribute('data-id');
+      localStorage.setItem(storageKeyCur, currentId);
+      renderThreads();
+      renderCurrent();
+    });
+
+    var refreshBtn = qs('#refreshThreads');
+    if (refreshBtn) refreshBtn.addEventListener('click', function(){ renderThreads(); renderCurrent(); });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var txt = (input.value || '').trim();
+      if (!txt) return;
+      var arr = messagesByThread[currentId] || (messagesByThread[currentId] = []);
+      arr.push({ who: 'me', text: txt, when: now() });
+      localStorage.setItem(storageKeyMsgs, JSON.stringify(messagesByThread));
+      input.value = '';
+      renderCurrent();
+    });
+
+    // initial render
+    renderThreads();
+    renderCurrent();
   }
 
   // ------------------------ Filters save/load (marketplace & bids) ------------------------

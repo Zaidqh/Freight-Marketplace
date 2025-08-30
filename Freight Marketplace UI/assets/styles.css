@@ -1,3 +1,9 @@
+.bids-page .route-display,
+.bids-page .fw-semibold + .text-secondary.small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 /* =========================================================
    Duff Bros Freight — Balanced & Elegant Dark Theme
    Refined proportions, softer tones, and better visual hierarchy
@@ -1333,6 +1339,25 @@ body:not(.home-page) .page-header {
   padding: 2rem 0 2rem;
 }
 
+/* Remove background boxes behind main texts on internal pages */
+.loads-page .page-header,
+.marketplace-page .page-header,
+.bids-page .page-header,
+.bookings-page .page-header,
+.messages-page .page-header,
+.admin-page .page-header {
+  background: transparent !important;
+}
+
+.loads-page .page-header::before,
+.marketplace-page .page-header::before,
+.bids-page .page-header::before,
+.bookings-page .page-header::before,
+.messages-page .page-header::before,
+.admin-page .page-header::before {
+  content: none !important;
+}
+
 /* Also reduce the header title size for internal pages to save space */
 body:not(.home-page) .page-header .header-title {
   font-size: 2rem;
@@ -1365,6 +1390,11 @@ body:not(.home-page) .page-header .header-icon {
   bottom: 0;
   background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M 25 0 L 0 0 0 25" fill="none" stroke="%23475569" stroke-width="0.2" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
   opacity: 0.05;
+}
+
+/* Hide small label boxes above headings on internal pages (Loads, Marketplace, Quotes, Bookings, Messages, Admin, etc.) */
+body:not(.home-page) .page-header .header-badge {
+  display: none !important;
 }
 
 .header-content {
@@ -1801,6 +1831,71 @@ body:not(.home-page) .page-header .header-icon {
 
 .load-row-details.expanded {
   max-height: 1000px;
+}
+
+/* Marketplace: simplify header row and improve visual hierarchy */
+.marketplace-page .load-row {
+  background: rgba(15, 23, 42, 0.35);
+  border: 1px solid var(--slate-700);
+}
+
+.marketplace-page .load-row-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.marketplace-page .load-row-header:hover {
+  background: rgba(99, 102, 241, 0.06);
+  border-color: var(--primary);
+}
+
+.marketplace-page .load-row-main {
+  grid-template-columns: 2fr 2fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Hide dense secondary info from the main row (shown in details on expand) */
+.marketplace-page .load-info-section,
+.marketplace-page .load-dates,
+.marketplace-page .load-specs {
+  display: none;
+}
+
+.marketplace-page .load-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.marketplace-page .load-route-section .route-display {
+  color: var(--slate-300);
+  font-size: 0.95rem;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.marketplace-page .load-badges .badge {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: var(--slate-300);
+  opacity: 0.85;
+}
+
+.marketplace-page .budget-amount {
+  font-weight: 700;
+  color: var(--primary-light);
+}
+
+.marketplace-page .load-actions .expand-icon {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.marketplace-page .load-row-header:hover .expand-icon {
+  opacity: 1;
 }
 
 .details-content {
@@ -2577,6 +2672,11 @@ body:not(.home-page) .page-header .header-icon {
   padding-top: calc(var(--nav-offset) + 16px) !important;
 }
 
+/* Contact page: ensure content clears fixed navbar */
+.contact-page .content-area {
+  padding-top: calc(var(--nav-offset) + 16px) !important;
+}
+
 /* Home page: hero right image (no cropping, keep full image visible) */
 .hero-side-image {
   width: 100%;
@@ -2594,6 +2694,42 @@ body:not(.home-page) .page-header .header-icon {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+/* Messages (chat) */
+.msg-wrap {
+  min-height: 280px;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.35);
+  border-bottom: 1px solid var(--slate-700);
+}
+.msg-bubble {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.25rem;
+  max-width: 80%;
+}
+.msg-bubble.me {
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+}
+.msg-bubble.them {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+.msg-meta {
+  font-size: 0.75rem;
+  color: var(--slate-400);
+  margin-bottom: 0.5rem;
+}
+
+#composerForm .input-group > textarea.form-control {
+  background: var(--slate-700);
+  border-color: var(--slate-600);
+}
+#composerForm .btn-primary {
+  min-width: 48px;
 }
 
 

@@ -45,14 +45,15 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="marketplace.html" aria-current="page">Marketplace</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="bids.html">Quotes</a>
-                    </li>
+                    
                     <li class="nav-item">
                         <a class="nav-link" href="bookings.html">Bookings</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="messages.html">Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="admin.html">Admin</a>
@@ -95,19 +96,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="header-visual">
-                            <div class="header-icon mb-3">
-                                <i class="bi bi-search display-1 text-primary opacity-25" aria-hidden="true"></i>
-                            </div>
-                            <div class="header-illustration">
-                                <div class="illustration-card bg-primary bg-opacity-10 p-3 rounded-3">
-                                    <i class="bi bi-truck text-primary fs-1" aria-hidden="true"></i>
-                                    <p class="text-muted small mb-0 mt-2">Smart Matching</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-lg-4 mt-4 mt-lg-0 d-flex align-items-center">
+                        <img src="./assets/moving.jpg?v=1" alt="Professional movers handling wrapped furniture" class="img-fluid rounded shadow-lg hero-side-image">
                     </div>
+                    
                 </div>
             </div>
         </section>
@@ -389,7 +381,7 @@
                         <li><a href="#">About Us</a></li>
                         <li><a href="#">Careers</a></li>
                         <li><a href="#">Press</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-2 col-md-6">
@@ -447,7 +439,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="load-summary mb-4 p-3 bg-light rounded">
+                    <div class="load-summary mb-4 p-3 rounded" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(100,116,139,0.3);">
                         <h6 class="mb-2" id="modalLoadTitle">Load Title</h6>
                         <p class="mb-1 text-muted" id="modalLoadRoute">Route</p>
                         <p class="mb-0 text-muted" id="modalLoadDetails">Details</p>
@@ -612,17 +604,7 @@
                                 </div>
                             </div>
                             <div class="load-route-section">
-                                <div class="route-display">
-                                    <span class="route-start">
-                                        <i class="bi bi-geo-alt-fill text-primary me-2"></i>
-                                        ${load.pickup}
-                                    </span>
-                                    <i class="bi bi-arrow-right mx-3 text-muted"></i>
-                                    <span class="route-end">
-                                        <i class="bi bi-geo-alt text-success me-2"></i>
-                                        ${load.dropoff}
-                                    </span>
-                                </div>
+                                <div class="route-display">${load.pickup} → ${load.dropoff}</div>
                             </div>
                             <div class="load-info-section">
                                 <div class="load-dates">
@@ -707,6 +689,7 @@
                                     <div class="detail-content">
                                         <p><strong>Posted:</strong> ${postedDate}</p>
                                         <p><strong>Budget:</strong> ${load.budget}</p>
+                                        ${load.contactName ? `<p><strong>Contact:</strong> ${load.contactName}</p>` : ''}
                                         ${load.notes ? `<p><strong>Notes:</strong> ${load.notes}</p>` : ''}
                                     </div>
                                 </div>
