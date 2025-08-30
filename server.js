@@ -4,15 +4,33 @@
 
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const pinoHttp = (() => { try { return require('pino-http'); } catch(e){ return null; } })();
+const http = require('http');
+const stripeLib = (() => { try { return require('stripe'); } catch(e){ return null; } })();
+const STRIPE_SECRET = process.env.STRIPE_SECRET || '';
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
+const stripe = (stripeLib && STRIPE_SECRET) ? stripeLib(STRIPE_SECRET) : null;
+let io = null;
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 
 // -------------------------------------------------------------
-// Middleware
+// Middleware (order matters: Stripe webhook must receive raw body)
 // -------------------------------------------------------------
-app.use(cors({ origin: true, credentials: false }));
-app.use(express.json({ limit: '1mb' }));
+app.use(cors({ origin: true, credentials: true }));
+if (pinoHttp) {
+  app.use(pinoHttp({
+    genReqId: (req, res) => {
+      const id = (req.headers['x-request-id'] || `req-${Date.now()}-${Math.random().toString(36).slice(2,8)}`);
+      res.setHeader('x-request-id', id);
+      return id;
+    }
+  }));
+}
+app.use(cookieParser());
 
 // Allow simple preflight for admin DELETE etc.
 app.options('*', cors());
@@ -26,6 +44,8 @@ const DB = {
   quotes: [],
   bookings: [],
   messages: [],
+  dmThreads: [],
+  dmMessages: [],
   flags: [],      // flagged shipments
   logs: [],       // audit log entries
   counters: {
@@ -60,6 +80,52 @@ function log(actor, type, subject, detail) {
   if (DB.logs.length > 1000) DB.logs.length = 1000;
   return entry;
 }
+
+// -------------------------------------------------------------
+// Realtime: Socket.IO (if available) + SSE fallback for shipments
+// -------------------------------------------------------------
+try {
+  const { Server } = require('socket.io');
+  io = new Server(server, { cors: { origin: true, credentials: true } });
+  io.on('connection', (socket) => {
+    try {
+      const cookie = socket.handshake.headers.cookie || '';
+      const raw = cookie.split('fm_session=')[1];
+      if (raw) {
+        const json = decodeURIComponent(raw.split(';')[0]);
+        const sess = JSON.parse(json);
+        if (sess && sess.userId) {
+          socket.join(`user:${sess.userId}`);
+        }
+      }
+    } catch (e) {}
+    socket.join('shipments');
+  });
+} catch (e) {
+  io = null;
+}
+
+const sseClients = new Set();
+function sseBroadcast(event, data) {
+  const payload = `event: ${event}\n` + `data: ${JSON.stringify(data)}\n\n`;
+  sseClients.forEach((res) => { try { res.write(payload); } catch (e) {} });
+}
+function emitPublic(event, data) {
+  if (io) { try { io.to('shipments').emit(event, data); } catch (e) {} }
+  sseBroadcast(event, data);
+}
+function emitToUsers(userIds, event, data) {
+  if (!io || !Array.isArray(userIds) || !userIds.length) return;
+  try { io.to(userIds.map(id => `user:${id}`)).emit(event, data); } catch (e) {}
+}
+app.get('/events/shipments', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  sseClients.add(res);
+  const hb = setInterval(() => { try { res.write(': hb\n\n'); } catch (e) {} }, 25000);
+  req.on('close', () => { clearInterval(hb); sseClients.delete(res); });
+});
 
 // -------------------------------------------------------------
 // Seed data
@@ -110,6 +176,7 @@ function seed() {
     dropoff: 'Berlin, DE',
     readyDate: nowISO().slice(0, 10),
     weightKg: 800, volumeM3: 6.0, crossBorder: true,
+    service: 'removals', adr: false,
     notes: 'Tail-lift preferred. Fragile glassware.',
     status: 'OPEN', hidden: false, ownerId: shipper.id,
     createdAt: nowISO(),
@@ -121,6 +188,7 @@ function seed() {
     dropoff: 'Paris, FR',
     readyDate: nowISO().slice(0, 10),
     weightKg: 1200, volumeM3: 10.5, crossBorder: true,
+    service: 'general', adr: false,
     notes: 'Standard service ok.',
     status: 'BOOKED', hidden: false, ownerId: shipper.id,
     createdAt: nowISO(),
@@ -132,6 +200,7 @@ function seed() {
     dropoff: 'Vienna, AT',
     readyDate: nowISO().slice(0, 10),
     weightKg: 1000, volumeM3: 9.2, crossBorder: true,
+    service: 'reefer', adr: false,
     notes: 'Keep at 4°C.',
     status: 'DELIVERED', hidden: false, ownerId: shipper.id,
     createdAt: nowISO(),
@@ -143,6 +212,7 @@ function seed() {
     dropoff: 'Prague, CZ',
     readyDate: nowISO().slice(0, 10),
     weightKg: 1500, volumeM3: 5.5, crossBorder: true,
+    service: 'flatbed', adr: true,
     notes: 'Strapping required.',
     status: 'OPEN', hidden: false, ownerId: shipper.id,
     createdAt: nowISO(),
@@ -154,6 +224,7 @@ function seed() {
     dropoff: 'Lyon, FR',
     readyDate: nowISO().slice(0, 10),
     weightKg: 900, volumeM3: 7.0, crossBorder: true,
+    service: 'general', adr: false,
     notes: 'Standard EU documentation.',
     status: 'OPEN', hidden: false, ownerId: shipper.id,
     createdAt: nowISO(),
@@ -264,6 +335,8 @@ function publicBooking(b) {
 function publicMessage(m) {
   return { ...m };
 }
+function publicDmThread(t) { return { ...t }; }
+function publicDmMessage(m) { return { ...m }; }
 function metricsCounts() {
   const pendingKYB = DB.users.filter(u => u.role === 'transporter' && !u.verified && !u.banned).length;
   return {
@@ -299,14 +372,69 @@ app.post('/seed', (req, res) => {
 });
 
 // -------------------------------------------------------------
+// Demo Auth (cookie-based, httpOnly)
+// -------------------------------------------------------------
+app.post('/auth/demo-login', (req, res) => {
+  const role = String((req.body && req.body.role) || '').toLowerCase();
+  if (!['shipper', 'transporter', 'admin'].includes(role)) {
+    return res.status(400).json({ ok: false, error: 'invalid role' });
+  }
+  // Set a simple demo session cookie with chosen role
+  // Assign a demo userId based on role for DM access control
+  const userId = role === 'shipper' ? 'user-0001' : role === 'transporter' ? 'user-0002' : 'user-0000';
+  res.cookie('fm_session', JSON.stringify({ role, userId }), {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+    // secure can be enabled if serving over https
+  });
+  res.json({ ok: true, role });
+});
+
+app.post('/auth/logout', (req, res) => {
+  res.clearCookie('fm_session', { path: '/' });
+  res.json({ ok: true });
+});
+
+// -------------------------------------------------------------
 // Shipments
 // -------------------------------------------------------------
 app.get('/api/shipments', (req, res) => {
-  const list = DB.shipments
-    .filter(s => !s.hidden)
-    .slice()
-    .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
-  res.json({ data: list.map(publicShipment) });
+  const q = req.query || {};
+  const status = (q.status || '').toString().toUpperCase();
+  const pickupContains = (q.pickupContains || '').toString().toLowerCase();
+  const dropoffContains = (q.dropoffContains || '').toString().toLowerCase();
+  const service = (q.service || '').toString().toLowerCase();
+  const adr = q.adr != null ? String(q.adr).toLowerCase() : '';
+  const earliestDate = (q.earliestDate || '').toString();
+  let list = DB.shipments.filter(s => !s.hidden);
+  if (status) list = list.filter(s => String(s.status || '') === status);
+  if (pickupContains) list = list.filter(s => String(s.pickup||'').toLowerCase().includes(pickupContains));
+  if (dropoffContains) list = list.filter(s => String(s.dropoff||'').toLowerCase().includes(dropoffContains));
+  if (service) list = list.filter(s => String(s.service||'').toLowerCase() === service);
+  if (adr) list = list.filter(s => (!!s.adr) === (adr === 'true' || adr === '1' || adr === 'yes'));
+  if (earliestDate) list = list.filter(s => !s.readyDate || String(s.readyDate) >= earliestDate);
+  list = list.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '') || String(b.id||'').localeCompare(String(a.id||'')));
+  const limit = Math.min(Math.max(parseInt((q.limit||'20'), 10) || 20, 1), 100);
+  const cursor = (q.cursor || '').toString();
+  if (cursor) {
+    const parts = cursor.split('|');
+    const cAt = parts[0] || '';
+    const cId = parts[1] || '';
+    list = list.filter(x => (x.createdAt || '') + '|' + (x.id || '') < cAt + '|' + cId);
+  }
+  const page = list.slice(0, limit);
+  const nextItem = list[limit];
+  const nextCursor = nextItem ? ((nextItem.createdAt || '') + '|' + (nextItem.id || '')) : null;
+  res.json({ data: page.map(publicShipment), nextCursor });
+});
+
+app.get('/api/shipments/:id', (req, res) => {
+  const { id } = req.params;
+  const s = DB.shipments.find(x => x.id === id);
+  if (!s) return res.status(404).json({ ok: false, error: 'shipment not found' });
+  const quotes = DB.quotes.filter(q => q.shipmentId === id).map(publicQuote);
+  res.json({ ok: true, data: { shipment: publicShipment(s), quotes } });
 });
 
 app.post('/api/shipments', (req, res) => {
@@ -321,6 +449,8 @@ app.post('/api/shipments', (req, res) => {
     volumeM3: Number(body.volumeM3 || 0),
     crossBorder: !!body.crossBorder,
     notes: (body.notes || '').toString(),
+    service: (body.service || '').toString() || null,
+    adr: body.adr != null ? !!body.adr : false,
     status: 'OPEN',
     hidden: false,
     ownerId: body.ownerId || null,
@@ -331,6 +461,7 @@ app.post('/api/shipments', (req, res) => {
   }
   DB.shipments.unshift(s);
   log('shipper', 'shipment', s.id, 'Created shipment');
+  emitPublic('shipment:new', publicShipment(s));
   res.json({ ok: true, data: publicShipment(s) });
 });
 
@@ -412,6 +543,7 @@ app.post('/api/quotes/:id/accept', (req, res) => {
   });
 
   log('shipper', 'booking', booking.id, `Accepted quote ${q.id}; booking created`);
+  emitPublic('booking:new', publicBooking(booking));
   res.json({ ok: true, data: publicBooking(booking), threadId });
 });
 
@@ -456,7 +588,78 @@ app.post('/api/bookings/:id/status', (req, res) => {
   });
 
   log('transporter', 'status', b.id, `Set status to ${status}`);
+  emitPublic('booking:update', publicBooking(b));
   res.json({ ok: true, data: publicBooking(b) });
+});
+
+// -------------------------------------------------------------
+// Quote aliases for shipment-specific routes
+// -------------------------------------------------------------
+app.get('/api/shipments/:id/quotes', (req, res) => {
+  const { id } = req.params;
+  const s = DB.shipments.find(x => x.id === id);
+  if (!s) return res.status(404).json({ ok: false, error: 'shipment not found' });
+  const list = DB.quotes.filter(q => q.shipmentId === id).slice().sort((a,b)=> (b.createdAt||'').localeCompare(a.createdAt||''));
+  res.json({ data: list.map(publicQuote) });
+});
+
+app.post('/api/shipments/:id/quotes', (req, res) => {
+  const { id } = req.params;
+  const s = DB.shipments.find(x => x.id === id);
+  if (!s) return res.status(404).json({ ok: false, error: 'shipment not found' });
+  if (s.status !== 'OPEN') return res.status(400).json({ ok: false, error: 'shipment is not open for quotes' });
+  const body = req.body || {};
+  const q = {
+    id: genId('quote'),
+    shipmentId: id,
+    companyName: (body.companyName || 'Transporter').toString(),
+    contactEmail: (body.contactEmail || '').toString(),
+    price: Number(body.price || 0),
+    etaDays: body.etaDays != null ? Number(body.etaDays) : null,
+    message: (body.message || '').toString(),
+    status: 'ACTIVE',
+    createdAt: nowISO(),
+    transporterUserId: body.transporterUserId || null,
+  };
+  DB.quotes.unshift(q);
+  log('transporter', 'quote', q.id, `Submitted quote for ${id}`);
+  emitPublic('quote:new', publicQuote(q));
+  res.json({ ok: true, data: publicQuote(q) });
+});
+
+app.post('/api/shipments/:shipmentId/quotes/:quoteId/accept', (req, res) => {
+  const { quoteId } = req.params;
+  const q = DB.quotes.find(x => x.id === quoteId);
+  if (!q) return res.status(404).json({ ok: false, error: 'quote not found' });
+  const s = DB.shipments.find(x => x.id === q.shipmentId);
+  if (!s) return res.status(404).json({ ok: false, error: 'shipment not found' });
+  if (s.status !== 'OPEN') return res.status(400).json({ ok: false, error: 'shipment not open' });
+
+  q.status = 'ACCEPTED';
+  DB.quotes.forEach(other => {
+    if (other.shipmentId === q.shipmentId && other.id !== q.id && other.status === 'ACTIVE') {
+      other.status = 'REJECTED';
+    }
+  });
+
+  s.status = 'BOOKED';
+  const threadId = genId('thread');
+  const booking = {
+    id: genId('booking'),
+    shipmentId: s.id,
+    quoteId: q.id,
+    transporterCompany: q.companyName,
+    price: q.price,
+    status: 'BOOKED',
+    threadId,
+    createdAt: nowISO(),
+    updatedAt: nowISO(),
+  };
+  DB.bookings.unshift(booking);
+  DB.messages.push({ id: genId('msg'), threadId, senderRole: 'system', text: `Booking created for shipment ${s.id}. Use this thread to coordinate.`, ts: nowISO() });
+  log('shipper', 'booking', booking.id, `Accepted quote ${q.id}; booking created`);
+  emitPublic('booking:new', publicBooking(booking));
+  res.json({ ok: true, data: publicBooking(booking), threadId });
 });
 
 // -------------------------------------------------------------
@@ -602,8 +805,124 @@ app.delete('/api/admin/wipe', (req, res) => {
 });
 
 // -------------------------------------------------------------
+// Direct Messages (DM) — secure inbox per user
+// -------------------------------------------------------------
+function getSession(req){
+  try { return JSON.parse(req.cookies.fm_session || '{}'); } catch(e){ return {}; }
+}
+function requireAuth(req, res){
+  const s = getSession(req);
+  if (!s || !s.userId) { res.status(401).json({ ok:false, error:'unauthorized' }); return null; }
+  return s;
+}
+
+// List DM threads for current user
+app.get('/api/dm/threads', (req, res) => {
+  const s = requireAuth(req, res); if (!s) return;
+  const list = DB.dmThreads.filter(t => t.members && t.members.includes(s.userId)).slice().sort((a,b)=> (b.updatedAt||'').localeCompare(a.updatedAt||''));
+  res.json({ ok:true, data: list.map(publicDmThread) });
+});
+
+// Create or fetch a DM thread with another user
+app.post('/api/dm/threads', (req, res) => {
+  const s = requireAuth(req, res); if (!s) return;
+  const otherId = String((req.body && req.body.otherUserId) || '').trim();
+  if (!otherId) return res.status(400).json({ ok:false, error:'otherUserId required' });
+  let t = DB.dmThreads.find(x => Array.isArray(x.members) && x.members.length===2 && x.members.includes(s.userId) && x.members.includes(otherId));
+  if (!t) {
+    t = { id: genId('thread'), type:'dm', members:[s.userId, otherId], createdAt: nowISO(), updatedAt: nowISO() };
+    DB.dmThreads.unshift(t);
+  }
+  res.json({ ok:true, data: publicDmThread(t) });
+});
+
+// List messages for a DM thread (authz check)
+app.get('/api/dm/messages', (req, res) => {
+  const s = requireAuth(req, res); if (!s) return;
+  const threadId = String((req.query && req.query.threadId) || '');
+  const t = DB.dmThreads.find(x => x.id === threadId);
+  if (!t || !t.members.includes(s.userId)) return res.status(403).json({ ok:false, error:'forbidden' });
+  const list = DB.dmMessages.filter(m => m.threadId === threadId).slice().sort((a,b)=> (a.ts||'').localeCompare(b.ts||''));
+  res.json({ ok:true, data: list.map(publicDmMessage) });
+});
+
+// Send message to a DM thread (authz check)
+app.post('/api/dm/messages', (req, res) => {
+  const s = requireAuth(req, res); if (!s) return;
+  const body = req.body || {};
+  const threadId = String(body.threadId || '');
+  const text = String(body.text || '').trim();
+  if (!threadId || !text) return res.status(400).json({ ok:false, error:'threadId and text required' });
+  const t = DB.dmThreads.find(x => x.id === threadId);
+  if (!t || !t.members.includes(s.userId)) return res.status(403).json({ ok:false, error:'forbidden' });
+  const msg = { id: genId('msg'), threadId, senderId: s.userId, text, ts: nowISO() };
+  DB.dmMessages.push(msg);
+  t.updatedAt = nowISO();
+  try { emitToUsers(t.members, 'dm:new', { threadId, message: publicDmMessage(msg) }); } catch(e) {}
+  res.json({ ok:true, data: publicDmMessage(msg) });
+});
+
+// -------------------------------------------------------------
+// Payments (Stripe Payment Intents + Webhook)
+// -------------------------------------------------------------
+app.post('/api/payments/create-intent', async (req, res) => {
+  try {
+    if (!stripe) return res.status(500).json({ ok:false, error:'Stripe not configured' });
+    const { bookingId } = req.body || {};
+    if (!bookingId) return res.status(400).json({ ok:false, error:'bookingId required' });
+    const b = DB.bookings.find(x => x.id === bookingId);
+    if (!b) return res.status(404).json({ ok:false, error:'booking not found' });
+    const amount = Math.round(Number(b.price || 0) * 100);
+    if (!(amount > 0)) return res.status(400).json({ ok:false, error:'invalid amount' });
+    const intent = await stripe.paymentIntents.create({
+      amount,
+      currency: 'gbp',
+      metadata: { bookingId: b.id, shipmentId: b.shipmentId },
+      automatic_payment_methods: { enabled: true },
+    });
+    res.json({ ok:true, clientSecret: intent.client_secret, paymentIntentId: intent.id });
+  } catch (e) {
+    res.status(500).json({ ok:false, error: e.message || 'stripe error' });
+  }
+});
+
+// Publishable key endpoint for client to initialize Stripe
+app.get('/api/payments/publishable-key', (req, res) => {
+  const pk = process.env.STRIPE_PUBLISHABLE_KEY || '';
+  if (!pk) return res.status(500).json({ ok:false, error:'Stripe publishable key not set' });
+  res.json({ ok:true, publishableKey: pk });
+});
+
+// Webhook for payment events (must use raw body for verification)
+app.post('/webhooks/stripe', express.raw({ type: 'application/json' }), (req, res) => {
+  if (!stripe || !STRIPE_WEBHOOK_SECRET) return res.status(500).end();
+  const sig = req.headers['stripe-signature'];
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  if (event.type === 'payment_intent.succeeded') {
+    const pi = event.data.object;
+    const bookingId = pi.metadata && pi.metadata.bookingId;
+    const b = DB.bookings.find(x => x.id === bookingId);
+    if (b) {
+      b.paid = true;
+      b.updatedAt = nowISO();
+      log('system', 'payment', b.id, 'Payment captured');
+      emitPublic('booking:update', publicBooking(b));
+    }
+  }
+  res.json({ received: true });
+});
+
+// After webhook is registered, enable JSON body parsing for the rest of the app
+app.use(express.json({ limit: '1mb' }));
+
+// -------------------------------------------------------------
 // Start server
 // -------------------------------------------------------------
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Duff Bros Freight API running on http://localhost:${PORT}`);
 });

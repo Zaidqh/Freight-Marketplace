@@ -1,532 +1,317 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
-  <head>
-    <!-- =========================================================
-         Duff Bros Freight — Bookings (Track & Update Status)
-         Fully compatible with assets/common.js & server.js
-         IDs used by JS:
-           - #bookingsList : <ul> container for booking cards
-           - .act-status   : buttons to update booking status (data-id, data-status)
-         ======================================================= -->
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freight Marketplace — Bookings</title>
+    <meta name="description" content="Monitor your freight shipments from booking to delivery with real-time updates and comprehensive tracking.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Bookings - Freight Marketplace">
+    <meta property="og:description" content="Monitor your freight shipments from booking to delivery.">
+    <meta property="og:url" content="https://example.com/bookings">
+    <meta property="og:image" content="/og.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="assets/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="bookings-page">
+    <!-- Skip Link for Accessibility -->
+    <a class="skip-link" href="#content">Skip to content</a>
 
-    <title>Duff Bros Freight — Bookings</title>
-
-    <!-- Bootstrap & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
-
-    <!-- Project theme -->
-    <link href="assets/styles.css" rel="stylesheet"/>
-
-    <link rel="icon" href="data:,"/>
-    <meta name="color-scheme" content="dark light"/>
-  </head>
-
-  <body class="bg-body">
-    <!-- =========================================================
-         NAVBAR (sticky, shared across pages)
-         ======================================================= -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
-      <div class="container">
-        <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="index.html">
-          <i class="bi bi-truck"></i>
-          <span>Duff Bros Freight</span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fmNav" aria-controls="fmNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div id="fmNav" class="collapse navbar-collapse">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="loads.html"><i class="bi bi-box-seam"></i> Post Shipment</a></li>
-            <li class="nav-item"><a class="nav-link" href="bids.html"><i class="bi bi-cash-coin"></i> Quotes</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="bookings.html"><i class="bi bi-journal-check"></i> Bookings</a></li>
-            <li class="nav-item"><a class="nav-link" href="messages.html"><i class="bi bi-chat-text"></i> Messages</a></li>
-            <li class="nav-item"><a class="nav-link" href="admin.html"><i class="bi bi-shield-lock"></i> Admin</a></li>
-          </ul>
-
-          <!-- Shared quick controls -->
-          <div class="d-flex align-items-center gap-2">
-            <div class="input-group input-group-sm" style="width: 280px">
-              <span class="input-group-text">API</span>
-              <input id="baseUrl" class="form-control" value="http://localhost:3000" aria-label="API base URL"/>
+    <!-- Modern Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" role="navigation" aria-label="Main">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="./assets/duffbroslogo.jpg" alt="Duffbros" class="brand-logo me-2">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="loads.html">Post Load</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="marketplace.html">Marketplace</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="bids.html">Quotes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="bookings.html" aria-current="page">Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="messages.html">Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.html">Admin</a>
+                    </li>
+                </ul>
             </div>
-            <button class="btn btn-sm btn-outline-secondary" id="btnHealth">
-              <i class="bi bi-activity"></i> Health
-            </button>
-            <button class="btn btn-sm btn-danger" id="btnSeed">
-              <i class="bi bi-lightning-charge"></i> Seed
-            </button>
-          </div>
         </div>
-      </div>
     </nav>
 
-    <!-- =========================================================
-         HERO
-         ======================================================= -->
-    <header class="py-5 hero-slate">
-      <div class="container">
-        <div class="row align-items-center g-4">
-          <div class="col-12 col-xl-7 text-white">
-            <span class="badge bg-white text-dark mb-3">Bookings</span>
-            <h1 class="display-5 fw-bold lh-sm">Track bookings &amp; update job status</h1>
-            <p class="lead text-white-50 mt-2">
-              This is the control room for live jobs. Move bookings through stages, open the chat,
-              and keep everyone aligned until delivery.
-            </p>
-            <div class="d-flex flex-wrap gap-3 mt-1 small text-white-75">
-              <span><i class="bi bi-signpost-split"></i> Route at a glance</span>
-              <span><i class="bi bi-kanban"></i> Status progression</span>
-              <span><i class="bi bi-chat-dots"></i> One-click chat</span>
-            </div>
-
-            <!-- Status strip (cosmetic) -->
-            <div class="mt-4 small">
-              <span class="text-white-50">API base: </span>
-              <span class="font-monospace" id="statusBase">http://localhost:3000</span>
-              <span class="mx-2">•</span>
-              <span class="text-white-50">Hint:</span>
-              <span class="font-monospace">Accept a quote on Quotes page to create a booking</span>
-            </div>
-          </div>
-
-          <div class="col-12 col-xl-5">
-            <div class="card border-0 shadow-medium">
-              <div class="card-body">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                  <i class="bi bi-info-circle text-primary"></i>
-                  <h2 class="h5 m-0">Status guide</h2>
-                </div>
-                <div class="row row-cols-2 g-2 small">
-                  <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-primary">BOOKED</span><span class="text-white-50">confirmed</span></div>
-                  <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-secondary">ENROUTE</span><span class="text-white-50">to pickup</span></div>
-                  <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-info">COLLECTED</span><span class="text-white-50">goods onboard</span></div>
-                  <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-warning">IN_TRANSIT</span><span class="text-dark">on the road</span></div>
-                  <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-success">DELIVERED</span><span class="text-white-50">completed</span></div>
-                  <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-danger">CANCELLED</span><span class="text-white-50">voided</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div><!-- /row -->
-      </div>
-    </header>
-
-    <!-- =========================================================
-         TOOLBAR (filters are cosmetic in MVP)
-         ======================================================= -->
-    <section class="container py-3">
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#filtersPanel">
-            <i class="bi bi-funnel"></i> Filters
-          </button>
-          <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#legendPanel">
-            <i class="bi bi-journal-text"></i> Legend
-          </button>
-          <a class="btn btn-outline-secondary" href="bids.html">
-            <i class="bi bi-cash-coin"></i> Go to Quotes
-          </a>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-outline-secondary" id="btnRefreshBookings">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
-          <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#exportPanel">
-            <i class="bi bi-download"></i> Export
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         BOOKINGS LIST (dynamic via assets/common.js → #bookingsList)
-         Each card has .act-status buttons for transitions.
-         ======================================================= -->
-    <section class="container pb-4">
-      <div class="d-flex align-items-end justify-content-between mb-2">
-        <div>
-          <h2 class="h4 fw-bold m-0">All bookings</h2>
-          <div class="text-secondary small">Live jobs created when a quote is accepted.</div>
-        </div>
-        <div class="text-secondary small">
-          Click a status to advance a job, or open chat to coordinate details.
-        </div>
-      </div>
-
-      <ul id="bookingsList" class="row g-3 list-unstyled">
-        <!-- Skeleton cards (replaced by JS) -->
-        <li class="col-12 col-lg-6">
-          <div class="card h-100">
-            <div class="card-body placeholder-wave">
-              <span class="placeholder col-6"></span>
-              <div class="mt-2"><span class="placeholder col-10"></span></div>
-              <div class="mt-3"><span class="placeholder col-5"></span></div>
-            </div>
-          </div>
-        </li>
-        <li class="col-12 col-lg-6 d-none d-lg-block">
-          <div class="card h-100">
-            <div class="card-body placeholder-wave">
-              <span class="placeholder col-5"></span>
-              <div class="mt-2"><span class="placeholder col-9"></span></div>
-              <div class="mt-3"><span class="placeholder col-7"></span></div>
-            </div>
-          </div>
-        </li>
-      </ul>
-
-      <div class="text-end mt-2">
-        <a class="btn btn-outline-light btn-sm" href="loads.html"><i class="bi bi-plus-circle"></i> Post another shipment</a>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         BOOKING INSIGHTS (static marketing-ish content)
-         ======================================================= -->
-    <section class="container pb-4">
-      <div class="row g-3 align-items-stretch">
-        <div class="col-12 col-xl-7">
-          <div class="card h-100">
-            <div class="card-header fw-semibold">Typical timeline (example)</div>
-            <div class="card-body">
-              <div class="row g-3 small">
-                <div class="col-12 col-md-6">
-                  <div class="border rounded p-3 h-100">
-                    <div class="fw-semibold mb-1">Day 0 — BOOKED</div>
-                    <ul class="text-secondary mb-0">
-                      <li>Quote accepted</li>
-                      <li>Chat thread opens</li>
-                      <li>Docs exchanged (if cross-border)</li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="col-12 col-md-6">
-                  <div class="border rounded p-3 h-100">
-                    <div class="fw-semibold mb-1">Day 1 — ENROUTE → COLLECTED</div>
-                    <ul class="text-secondary mb-0">
-                      <li>Driver to pickup</li>
-                      <li>Loaded &amp; secured</li>
-                      <li>Departed origin</li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="col-12 col-md-6">
-                  <div class="border rounded p-3 h-100">
-                    <div class="fw-semibold mb-1">Day 2 — IN_TRANSIT</div>
-                    <ul class="text-secondary mb-0">
-                      <li>Ferry crossing / border controls</li>
-                      <li>En route to destination</li>
-                      <li>ETAs updated in chat</li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="col-12 col-md-6">
-                  <div class="border rounded p-3 h-100">
-                    <div class="fw-semibold mb-1">Day 2–3 — DELIVERED</div>
-                    <ul class="text-secondary mb-0">
-                      <li>Unloaded, PoD shared</li>
-                      <li>Closeout in chat</li>
-                      <li>Invoice issued</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div class="text-secondary small mt-3">
-                Actual timelines vary by lane and service level. For cross-border shipments, allow time for customs formalities.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Status legend card -->
-        <div class="col-12 col-xl-5">
-          <div class="card h-100">
-            <div class="card-header fw-semibold">Status legend</div>
-            <div class="card-body small">
-              <div class="row row-cols-2 g-2">
-                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-primary">BOOKED</span><span class="text-secondary">confirmed</span></div>
-                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-secondary">ENROUTE</span><span class="text-secondary">to pickup</span></div>
-                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-info">COLLECTED</span><span class="text-secondary">goods onboard</span></div>
-                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-warning">IN_TRANSIT</span><span class="text-secondary">on the road</span></div>
-                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-success">DELIVERED</span><span class="text-secondary">completed</span></div>
-                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-danger">CANCELLED</span><span class="text-secondary">voided</span></div>
-              </div>
-
-              <div class="section-divider"></div>
-
-              <div class="small text-secondary">
-                <div class="fw-semibold mb-1">Pro tip</div>
-                Use the <b>Open chat</b> link on any booking card to jump into the dedicated message thread.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div><!-- /row -->
-    </section>
-
-    <!-- =========================================================
-         HTML TEMPLATES (optional)
-         ======================================================= -->
-    <section class="container pb-4">
-      <div class="card">
-        <div class="card-header fw-semibold">HTML templates (optional)</div>
-        <div class="card-body">
-          <p class="text-secondary small">
-            These templates are optional helpers for client-side rendering if you ever want to build more UI in JS.
-          </p>
-
-          <!-- Booking card template (structure mirrors common.js) -->
-          <template id="tpl-booking-card">
-            <li class="col-12 col-lg-6">
-              <div class="card h-100">
-                <div class="card-body d-flex flex-column">
-                  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-                    <div>
-                      <div class="small text-secondary">booking <span class="code">book-xxxx</span></div>
-                      <div class="fw-semibold">City A → City B</div>
-                      <div class="small text-secondary">Transporter: Company · £0000.00</div>
+    <!-- Main Content -->
+                    <main id="content" class="container">
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <div class="header-content">
+                            <div class="header-badge">
+                                <i class="bi bi-journal-check" aria-hidden="true"></i>
+                                Bookings & Tracking
+                            </div>
+                            <h1 class="header-title">Bookings & Tracking</h1>
+                            <p class="header-description">
+                                Monitor your shipments from booking to delivery with real-time updates and comprehensive tracking.
+                            </p>
+                        </div>
                     </div>
-                    <div><span class="badge text-bg-primary">BOOKED</span></div>
-                  </div>
-                  <div class="mt-3 d-flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-primary">BOOKED</button>
-                    <button class="btn btn-sm btn-outline-secondary">ENROUTE</button>
-                    <button class="btn btn-sm btn-outline-secondary">COLLECTED</button>
-                    <button class="btn btn-sm btn-outline-secondary">IN_TRANSIT</button>
-                    <button class="btn btn-sm btn-success">DELIVERED</button>
-                    <button class="btn btn-sm btn-danger">CANCELLED</button>
-                  </div>
-                  <div class="mt-3"><a class="small" href="messages.html?threadId=thread-xxxx">Open chat</a></div>
+                    <div class="col-lg-4">
+                        <div class="header-visual">
+                            <div class="header-icon">
+                                <i class="bi bi-journal-check" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </li>
-          </template>
+            </div>
+        </section>
 
-          <!-- Skeleton column -->
-          <template id="tpl-skeleton-col">
-            <li class="col-12 col-lg-6">
-              <div class="card h-100">
-                <div class="card-body placeholder-wave">
-                  <span class="placeholder col-6"></span>
-                  <div class="mt-2"><span class="placeholder col-10"></span></div>
-                  <div class="mt-3"><span class="placeholder col-5"></span></div>
+        <!-- Main Content -->
+        <section class="main-content py-5">
+            <div class="container">
+                <!-- Stats Overview -->
+                <div class="row g-4 mb-5">
+                    <div class="col-md-3">
+                        <div class="card bg-gradient-primary text-white h-100">
+                            <div class="card-body">
+                                <i class="bi bi-clock-history display-6 mb-2" aria-hidden="true"></i>
+                                <h3 class="mb-1" id="pendingCount">0</h3>
+                                <p class="mb-0">Pending</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-gradient-info text-white h-100">
+                            <div class="card-body">
+                                <i class="bi bi-truck display-6 mb-2" aria-hidden="true"></i>
+                                <h3 class="mb-1" id="activeCount">0</h3>
+                                <p class="mb-0">Active</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-gradient-success text-white h-100">
+                            <div class="card-body">
+                                <i class="bi bi-check-circle display-6 mb-2" aria-hidden="true"></i>
+                                <h3 class="mb-1" id="completedCount">0</h3>
+                                <p class="mb-0">Completed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-gradient-warning text-white h-100">
+                            <div class="card-body">
+                                <i class="bi bi-exclamation-triangle display-6 mb-2" aria-hidden="true"></i>
+                                <h3 class="mb-1" id="issuesCount">0</h3>
+                                <p class="mb-0">Issues</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </li>
-          </template>
-        </div>
-      </div>
-    </section>
 
-    <!-- =========================================================
-         FAQ / HELP
-         ======================================================= -->
-    <section class="container pb-5">
-      <div class="row g-4">
-        <div class="col-12 col-lg-6">
-          <div class="card h-100">
-            <div class="card-header fw-semibold">FAQ</div>
-            <div class="card-body">
-              <div class="mb-3">
-                <h3 class="h6">How do I change a booking’s status?</h3>
-                <p class="text-secondary small mb-0">
-                  Use the status buttons on the booking card. The current status is shown as a colored badge.
-                </p>
-              </div>
-              <div class="mb-3">
-                <h3 class="h6">Where can I chat about a booking?</h3>
-                <p class="text-secondary small mb-0">
-                  Click <b>Open chat</b> on the booking card to jump into the dedicated thread in Messages.
-                </p>
-              </div>
-              <div class="mb-0">
-                <h3 class="h6">How are bookings created?</h3>
-                <p class="text-secondary small mb-0">
-                  When a shipper accepts a quote on the Quotes page, the system creates a booking and opens a thread automatically.
-                </p>
-              </div>
+                <!-- Bookings Section -->
+                <div class="bookings-section">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h4 mb-0">Your Bookings</h2>
+                        <div class="view-toggle">
+                            <button type="button" class="btn btn-outline-secondary active" onclick="setViewMode('cards')">
+                                <i class="bi bi-grid-3x3-gap"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="setViewMode('table')">
+                                <i class="bi bi-list-ul"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="bookingsList" class="row g-4">
+                        <!-- Bookings will be populated here -->
+                    </div>
+                    
+                    <div id="bookingsTable" class="d-none">
+                        <!-- Table view will be populated here -->
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
+        </section>
 
-        <!-- Next steps -->
-        <div class="col-12 col-lg-6">
-          <div class="card h-100">
-            <div class="card-header fw-semibold">Next steps</div>
-            <div class="card-body">
-              <ol class="mb-0">
-                <li>Accept a quote to create a booking.</li>
-                <li>Update statuses as the job progresses.</li>
-                <li>Use Messages to keep all parties coordinated.</li>
-              </ol>
+        <!-- Booking Details Modal -->
+        <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="bookingModalLabel">Booking Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="bookingModalBody">
+                        <!-- Booking details will be populated here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="updateStatus()">
+                            <i class="bi bi-pencil me-1"></i>
+                            Update Status
+                        </button>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div><!-- /row -->
-    </section>
 
-    <!-- =========================================================
-         FOOTER
-         ======================================================= -->
-    <footer class="border-top py-4">
-      <div class="container small text-secondary d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <div>© <span id="year">2025</span> Duff Bros Freight — Bookings</div>
-        <div class="d-flex align-items-center gap-3">
-          <a class="link-secondary text-decoration-none" href="loads.html">Loads</a>
-          <a class="link-secondary text-decoration-none" href="bids.html">Quotes</a>
-          <a class="link-secondary text-decoration-none" href="messages.html">Messages</a>
+        <!-- Status Update Modal -->
+        <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="statusModalLabel">Update Booking Status</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="statusForm">
+                            <div class="mb-3">
+                                <label for="newStatus" class="form-label">New Status</label>
+                                <select class="form-select" id="newStatus" name="status" required>
+                                    <option value="">Select status...</option>
+                                    <option value="ENROUTE">En Route</option>
+                                    <option value="COLLECTED">Collected</option>
+                                    <option value="IN_TRANSIT">In Transit</option>
+                                    <option value="DELIVERED">Delivered</option>
+                                    <option value="CANCELLED">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="statusNotes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="statusNotes" name="notes" rows="3" placeholder="Add any relevant notes about this status update..."></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="submitStatusUpdate()">
+                            <i class="bi bi-check me-1"></i>
+                            Update Status
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <div class="brand-icon mb-3">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <h5>Duff Bros Freight</h5>
+                        <p>Premium logistics solutions connecting businesses across Europe with reliable, secure, and cost-effective transport services.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Services</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Full Truck Load</a></li>
+                        <li><a href="#">Express Delivery</a></li>
+                        <li><a href="#">International</a></li>
+                        <li><a href="#">Warehousing</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Company</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Support</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Safety</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Contact</h6>
+                    <ul class="footer-links">
+                        <li><i class="bi bi-envelope me-2"></i>info@duffbros.co.uk</li>
+                        <li><i class="bi bi-telephone me-2"></i>+44 7763 686431</li>
+                        <li><i class="bi bi-geo-alt me-2"></i>Chatteris, UK</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 Duff Bros Freight. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Built with ❤️ for the logistics industry</p>
+                </div>
+            </div>
+        </div>
     </footer>
 
-    <!-- =========================================================
-         OFFCANVAS: Filters (cosmetic in MVP)
-         ======================================================= -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="filtersPanel" aria-labelledby="filtersLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="filtersLabel"><i class="bi bi-funnel"></i> Filters</h5>
-        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body small">
-        <div class="vstack gap-2">
-          <div>
-            <label class="form-label small">Status</label>
-            <select class="form-select form-select-sm">
-              <option selected>Any</option>
-              <option>BOOKED</option>
-              <option>ENROUTE</option>
-              <option>COLLECTED</option>
-              <option>IN_TRANSIT</option>
-              <option>DELIVERED</option>
-              <option>CANCELLED</option>
-            </select>
-          </div>
-          <div class="row g-2">
-            <div class="col-12 col-sm-6">
-              <label class="form-label small">Pickup contains</label>
-              <input class="form-control form-control-sm" placeholder="e.g., London"/>
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Duff Bros Freight</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="col-12 col-sm-6">
-              <label class="form-label small">Dropoff contains</label>
-              <input class="form-control form-control-sm" placeholder="e.g., Berlin"/>
+            <div id="toastBody" class="toast-body">
+                <!-- Toast content will be populated by JavaScript -->
             </div>
-          </div>
-          <div class="d-flex gap-2">
-            <button class="btn btn-primary btn-sm disabled">Apply (demo)</button>
-            <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">Close</button>
-          </div>
-          <div class="text-secondary small">Filters are cosmetic in this MVP. Use the Seed button to reset demo data.</div>
         </div>
-      </div>
     </div>
 
-    <!-- =========================================================
-         OFFCANVAS: Legend (duplicate for quick access)
-         ======================================================= -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="legendPanel" aria-labelledby="legendLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="legendLabel"><i class="bi bi-journal-text"></i> Status legend</h5>
-        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body small text-secondary">
-        <p class="mb-2"><b>BOOKED</b> — quote accepted; job confirmed.</p>
-        <p class="mb-2"><b>ENROUTE</b> — heading to pickup address.</p>
-        <p class="mb-2"><b>COLLECTED</b> — loaded and secured.</p>
-        <p class="mb-2"><b>IN_TRANSIT</b> — traveling to destination.</p>
-        <p class="mb-2"><b>DELIVERED</b> — completed; proof of delivery shared.</p>
-        <p class="mb-0"><b>CANCELLED</b> — job voided.</p>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         OFFCANVAS: Export (stub)
-         ======================================================= -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="exportPanel" aria-labelledby="exportLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="exportLabel"><i class="bi bi-download"></i> Export</h5>
-        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body small">
-        <p class="text-secondary">Export is a stub for now. In the full app you’ll export CSV/Excel with:</p>
-<pre class="kbd mb-3">bookingId,shipmentId,route,status,price,transporter,threadId,updatedAt</pre>
-        <div class="d-flex gap-2">
-          <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">Close</button>
-          <button class="btn btn-primary btn-sm disabled">Download CSV (coming soon)</button>
+    <!-- Offcanvas Side Panel -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidePanel" aria-labelledby="sidePanelLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidePanelLabel">Side Panel</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         SHARED RIGHT SIDEBAR (optional detail preview)
-         ======================================================= -->
-    <aside id="sidePanel" class="offcanvas offcanvas-end" tabindex="-1" aria-labelledby="sidePanelLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="sidePanelLabel">Booking details</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body" id="sidePanelBody">
-        <div class="text-secondary small">Select a booking card to preview.</div>
-      </div>
-    </aside>
-
-    <!-- =========================================================
-         SHARED TOAST
-         ======================================================= -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
-      <div id="toast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body" id="toastBody">Ready.</div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        <div id="sidePanelBody" class="offcanvas-body">
+            <!-- Side panel content will be populated by JavaScript -->
         </div>
-      </div>
     </div>
 
-    <!-- =========================================================
-         SCRIPTS
-         ======================================================= -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/common.js" defer></script>
-
-    <script>
-      // Page-local UI sugar (navigation only; all API logic lives in assets/common.js)
-      (function(){
-        function qs(sel){ return document.querySelector(sel); }
-        function on(el, ev, fn){ if(el) el.addEventListener(ev, fn); }
-
-        // Footer year cosmetic
-        var y = document.getElementById('year'); if(y){ y.textContent = String((new Date()).getFullYear()); }
-
-        // Manual refresh button – common.js exposes refreshBookings() internally and wires click handlers
-        var btnRefresh = document.getElementById('btnRefreshBookings');
-        on(btnRefresh, 'click', function(){
-          // No direct fetch here; common.js refreshes after any status update and on page load
-          try { window.location.hash = '#refresh-' + Date.now(); } catch(e){}
-        });
-
-        // Optional: When a user clicks a booking card, open right sidebar (cosmetic)
-        var list = document.getElementById('bookingsList');
-        on(list, 'click', function(ev){
-          var card = ev.target.closest('.card');
-          if(!card) return;
-          var side = document.getElementById('sidePanel');
-          if(!side) return;
-          try {
-            var oc = new bootstrap.Offcanvas(side);
-            var body = document.getElementById('sidePanelBody');
-            if(body){
-              body.innerHTML = '<div class="small text-secondary">This is a quick preview panel. Use <b>Open chat</b> on the card to jump to the thread.</div>';
-            }
-            oc.show();
-          } catch(e){}
-        });
-      })();
-    </script>
-  </body>
+            <!-- Scripts -->
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script defer src="assets/common.js"></script>
+</body>
 </html>

@@ -5,6 +5,54 @@
 (function () {
   'use strict';
 
+  // ------------------------ Role Chooser ------------------------
+  function bootRoleChooser() {
+    var roleGate = qs('#roleGate');
+    if (!roleGate) return;
+    
+    // Check if role gate has been completed
+    if (localStorage.getItem('duff.roleGateDone') === '1') {
+      roleGate.classList.add('d-none');
+    }
+    
+    // Customer selection
+    var chooseCustomer = qs('#chooseCustomer');
+    if (chooseCustomer) {
+      chooseCustomer.addEventListener('click', function() {
+        localStorage.setItem('duff.role', 'customer');
+        localStorage.setItem('duff.roleGateDone', '1');
+        roleGate.classList.add('d-none');
+      });
+    }
+    
+    // Transporter selection
+    var chooseTransporter = qs('#chooseTransporter');
+    if (chooseTransporter) {
+      chooseTransporter.addEventListener('click', function() {
+        localStorage.setItem('duff.role', 'transporter');
+        localStorage.setItem('duff.roleGateDone', '1');
+        roleGate.classList.add('d-none');
+      });
+    }
+    
+    // Skip option
+    var skipGate = qs('#skipGate');
+    if (skipGate) {
+      skipGate.addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.setItem('duff.roleGateDone', '1');
+        roleGate.classList.add('d-none');
+      });
+    }
+  }
+  
+  // Expose reset function globally
+  window.resetRoleGate = function() {
+    localStorage.removeItem('duff.roleGateDone');
+    var roleGate = qs('#roleGate');
+    if (roleGate) roleGate.classList.remove('d-none');
+  };
+
   // ------------------------ Utilities ------------------------
   function qs(sel) { return document.querySelector(sel); }
   function qsa(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
@@ -29,21 +77,73 @@
     return out;
   }
 
-  function toast(msg) {
+  // Resilient toast helper that never silently fails
+  function toast(msg, type = 'info') {
+    // Try to use existing toast container first
     var el = qs('#toast'), body = qs('#toastBody');
-    if (!el || !body || !window.bootstrap || !bootstrap.Toast) { alert(msg); return; }
-    body.textContent = msg;
-    var t = new bootstrap.Toast(el);
-    t.show();
+    
+    if (el && body && window.bootstrap && bootstrap.Toast) {
+      // Use Bootstrap toast
+      body.textContent = msg;
+      var t = new bootstrap.Toast(el);
+      t.show();
+      return;
+    }
+    
+    // Fallback: inject a minimal toast if none exists
+    var injectedToast = injectMinimalToast(msg, type);
+    if (injectedToast) {
+      // Auto-remove after 4 seconds
+      setTimeout(function() {
+        if (injectedToast.parentNode) {
+          injectedToast.parentNode.removeChild(injectedToast);
+        }
+      }, 4000);
+      return;
+    }
+    
+    // Last resort: use alert() if injection is blocked
+    alert(msg);
+  }
+  
+  // Inject a minimal, dismissible toast element
+  function injectMinimalToast(msg, type) {
+    try {
+      var toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:20px;right:20px;background:#333;color:white;padding:1rem;border-radius:4px;z-index:9999;max-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+      toast.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+          <strong>${type === 'error' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️'} ${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+          <button onclick="this.parentElement.parentElement.remove()" style="background:none;border:none;color:white;cursor:pointer;font-size:1.2rem;">×</button>
+        </div>
+        <div>${escapeHtml(msg)}</div>
+      `;
+      
+      document.body.appendChild(toast);
+      return toast;
+    } catch (e) {
+      return null;
+    }
   }
 
   // ------------------------ Base URL persistence ------------------------
   var LS_BASE = 'duff.baseUrl';
   function getBase() {
+    // Check for meta tag first
+    var metaBase = qs('meta[name="api-base"]');
+    if (metaBase && metaBase.content) {
+      return metaBase.content;
+    }
+    
+    // Check input field
     var input = qs('#baseUrl');
     var fromInput = input && input.value ? input.value : null;
+    
+    // Check localStorage
     var fromLs = localStorage.getItem(LS_BASE);
-    return fromInput || fromLs || 'http://localhost:3000';
+    
+    // Return input value, localStorage value, or fallback to same-origin
+    return fromInput || fromLs || window.location.origin;
   }
   function setBase(newVal) {
     try { localStorage.setItem(LS_BASE, newVal); } catch (e) {}
@@ -55,7 +155,7 @@
 
   function http(method, path, body, headers) {
     var url = getBase() + path;
-    var opts = { method: method, headers: { 'Accept': 'application/json' } };
+    var opts = { method: method, headers: { 'Accept': 'application/json' }, credentials: 'include' };
     if (body) {
       opts.headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(body);
@@ -89,50 +189,60 @@
 
     var seed = qs('#btnSeed');
     if (seed) seed.addEventListener('click', function () {
-      http('POST', '/_seed/demo', {}).then(function () {
+      http('POST', '/seed', {}).then(function () {
         toast('Demo data seeded');
-        // kick any page-specific refreshers
         refreshHomeShipments();
         refreshShipmentsList();
+        refreshPublicFeed();
         refreshBookings();
       }).catch(function (e) { toast(e.message); });
     });
+
+    // Auth mount: role selector + login/logout using httpOnly cookie sessions
+    var mount = qs('#authMount');
+    if (mount) {
+      mount.innerHTML = (
+        '<div class="input-group input-group-sm" style="width: 280px">' +
+          '<label class="input-group-text" for="roleSelect">Role</label>' +
+          '<select class="form-select" id="roleSelect">' +
+            '<option value="">Guest</option>' +
+            '<option value="shipper">Shipper</option>' +
+            '<option value="transporter">Transporter</option>' +
+            '<option value="admin">Admin</option>' +
+          '</select>' +
+          '<button class="btn btn-outline-secondary" id="btnLogin">Login</button>' +
+          '<button class="btn btn-outline-secondary" id="btnLogout">Logout</button>' +
+        '</div>'
+      );
+      var sel = qs('#roleSelect');
+      var btnLogin = qs('#btnLogin');
+      var btnLogout = qs('#btnLogout');
+      if (btnLogin) btnLogin.addEventListener('click', function(){
+        var role = sel && sel.value ? sel.value : '';
+        if (!role) { toast('Select a role'); return; }
+        http('POST', '/auth/demo-login', { role: role }).then(function(){
+          toast('Logged in as ' + role);
+        }).catch(function(e){ toast(e.message); });
+      });
+      if (btnLogout) btnLogout.addEventListener('click', function(){
+        http('POST', '/auth/logout', {}).then(function(){
+          toast('Logged out');
+        }).catch(function(e){ toast(e.message); });
+      });
+    }
+    // Shipments realtime via Socket.IO (if available)
+    try {
+      if (window.io) {
+        var socket = window.io(getBase(), { withCredentials: true });
+        socket.on('shipment:new', function(){ refreshPublicFeed(); refreshHomeShipments(); });
+        socket.on('quote:new', function(){ /* optional */ });
+        socket.on('booking:new', function(){ refreshBookings(); });
+        socket.on('booking:update', function(){ refreshBookings(); });
+      }
+    } catch (e) {}
   }
 
-  // ------------------------ Token save/clear (index) ------------------------
-  function bootTokensPanel() {
-    var ship = qs('#tok_ship'), trans = qs('#tok_trans'), admin = qs('#tok_admin');
-    var save = qs('#btnSaveTokens'), clear = qs('#btnClearTokens');
-
-    function loadTokens() {
-      try {
-        if (ship) ship.value = localStorage.getItem('duff.tok_ship') || '';
-        if (trans) trans.value = localStorage.getItem('duff.tok_trans') || '';
-        if (admin) admin.value = localStorage.getItem('duff.tok_admin') || '';
-      } catch (e) {}
-    }
-    function saveTokens() {
-      try {
-        if (ship) localStorage.setItem('duff.tok_ship', ship.value || '');
-        if (trans) localStorage.setItem('duff.tok_trans', trans.value || '');
-        if (admin) localStorage.setItem('duff.tok_admin', admin.value || '');
-      } catch (e) {}
-      toast('Tokens saved');
-    }
-    function clearTokens() {
-      try {
-        localStorage.removeItem('duff.tok_ship');
-        localStorage.removeItem('duff.tok_trans');
-        localStorage.removeItem('duff.tok_admin');
-      } catch (e) {}
-      loadTokens();
-      toast('Tokens cleared');
-    }
-
-    if (save) save.addEventListener('click', saveTokens);
-    if (clear) clear.addEventListener('click', clearTokens);
-    if (ship || trans || admin) loadTokens();
-  }
+  // Tokens panel removed: no longer used
 
   // ------------------------ Home (index.html): Open shipments ------------------------
   function makeStatusBadge(status) {
@@ -180,6 +290,80 @@
     });
   }
 
+  // ------------------------ Public Feed (feed.html) ------------------------
+  function cardForFeedShipment(s) {
+    var route = escapeHtml((s.pickup || '') + ' → ' + (s.dropoff || ''));
+    var title = escapeHtml(s.title || 'Shipment');
+    var service = escapeHtml(s.service || '—');
+    var adr = s.adr ? '<span class="badge text-bg-danger ms-1">ADR</span>' : '';
+    var href = 'bids.html?id=' + encodeURIComponent(s.id);
+    return (
+      '<li class="col-12 col-md-6 col-lg-4">' +
+        '<div class="card h-100">' +
+          '<div class="card-body d-flex flex-column">' +
+            '<div class="small text-secondary">id: <span class="code">' + escapeHtml(s.id) + '</span></div>' +
+            '<div class="fw-semibold">' + title + '</div>' +
+            '<div class="text-secondary small mt-1">' + route + '</div>' +
+            '<div class="small mt-1">Service: <span class="code">' + service + '</span>' + adr + '</div>' +
+            '<div class="mt-2">' + makeStatusBadge(s.status) + '</div>' +
+            '<a class="btn btn-primary mt-auto" href="' + href + '"><i class="bi bi-send"></i> Send quote</a>' +
+          '</div>' +
+        '</div>' +
+      '</li>'
+    );
+  }
+
+  function readFeedFilters() {
+    var f = {
+      pickupContains: (qs('#f_pickup') && qs('#f_pickup').value || '').trim(),
+      dropoffContains: (qs('#f_dropoff') && qs('#f_dropoff').value || '').trim(),
+      service: (qs('#f_service') && qs('#f_service').value || '').trim(),
+      adr: !!(qs('#f_adr') && qs('#f_adr').checked),
+      earliestDate: (qs('#f_earliest') && qs('#f_earliest').value || '').trim(),
+    };
+    return f;
+  }
+
+  function buildQuery(params) {
+    var pairs = [];
+    for (var k in params) {
+      if (params[k] == null || params[k] === '' || (k === 'adr' && params[k] === false)) continue;
+      pairs.push(encodeURIComponent(k) + '=' + encodeURIComponent(params[k]));
+    }
+    return pairs.length ? ('?' + pairs.join('&')) : '';
+  }
+
+  function refreshPublicFeed() {
+    var ul = qs('#feedList');
+    if (!ul) return;
+    var f = readFeedFilters();
+    var q = buildQuery({ status: 'OPEN', pickupContains: f.pickupContains, dropoffContains: f.dropoffContains, service: f.service, adr: f.adr, earliestDate: f.earliestDate });
+    http('GET', '/api/shipments' + q).then(function(res){
+      var list = (res && res.data) ? res.data : [];
+      if (!list.length) {
+        ul.innerHTML = '<li class="col-12"><div class="card"><div class="card-body small text-secondary">No open requests match your filters.</div></div></li>';
+        return;
+      }
+      ul.innerHTML = list.map(cardForFeedShipment).join('');
+    }).catch(function(){});
+  }
+
+  function bootFeed() {
+    var ul = qs('#feedList'); if (!ul) return;
+    refreshPublicFeed();
+    // Filters
+    ['#f_pickup','#f_dropoff','#f_service','#f_adr','#f_earliest'].forEach(function(sel){
+      var el = qs(sel); if (!el) return;
+      el.addEventListener('change', refreshPublicFeed);
+      el.addEventListener('input', function(){ if (sel === '#f_pickup' || sel === '#f_dropoff') refreshPublicFeed(); });
+    });
+    // Realtime via SSE first
+    try {
+      var ev = new EventSource(getBase().replace(/^http/, 'http') + '/events/shipments', { withCredentials: true });
+      ev.addEventListener('shipment:new', function(){ refreshPublicFeed(); });
+    } catch (e) {}
+  }
+
   // ------------------------ Loads (loads.html) ------------------------
   function refreshShipmentsList() {
     var ul = qs('#shipmentsList');
@@ -203,6 +387,8 @@
       var payload = {};
       fd.forEach(function (v, k) { payload[k] = v; });
       payload.crossBorder = !!qs('#cb_cross') && qs('#cb_cross').checked;
+      if (qs('#sel_service')) payload.service = qs('#sel_service').value || '';
+      if (qs('#cb_adr')) payload.adr = !!qs('#cb_adr').checked;
       if (payload.weightKg) payload.weightKg = Number(payload.weightKg);
       if (payload.volumeM3) payload.volumeM3 = Number(payload.volumeM3);
 
@@ -241,7 +427,7 @@
       return;
     }
     ul.innerHTML = quotes.map(function (q) {
-      var price = (Number(q.pricePennies || 0) / 100).toFixed(2);
+      var price = (Number(q.pricePennies || 0) / 100);
       var badge = (q.status === 'ACCEPTED') ? 'success' : (q.status === 'REJECTED') ? 'secondary' : 'primary';
       var actions = (q.status === 'ACTIVE')
         ? '<button class="btn btn-sm btn-success act-accept" data-quote="' + escapeHtml(q.id) + '">Accept</button>'
@@ -255,7 +441,7 @@
                 '<div class="small text-secondary">' + escapeHtml(q.contactEmail || '') + '</div>' +
               '</div>' +
               '<div class="text-end">' +
-                '<div class="h5 m-0">£' + price + '</div>' +
+                '<div class="h5 m-0">' + (new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(price)) + '</div>' +
                 '<div class="small text-secondary">ETA: ' + (q.etaDays != null ? String(q.etaDays) + 'd' : '—') + '</div>' +
               '</div>' +
             '</div>' +
@@ -277,7 +463,7 @@
     if (!info || !ul || !form) return;
 
     var query = parseQuery();
-    var shipmentId = query.id || '';
+    var shipmentId = query.id || query.shipmentId || '';
 
     function loadAll() {
       if (!shipmentId) { ul.innerHTML = '<li class="card"><div class="card-body small text-secondary">Open this page with <code>?id=SHIPMENT_ID</code>.</div></li>'; return; }
@@ -315,15 +501,15 @@
       if (!quoteId) return;
       http('POST', '/api/shipments/' + encodeURIComponent(shipmentId) + '/quotes/' + encodeURIComponent(quoteId) + '/accept', {})
         .then(function (res) {
-          toast('Quote accepted — booking created');
-          loadAll();
-          // Optional: hint to visit bookings
+          toast('Quote accepted — proceed to payment');
           try {
-            if (res && res.data && res.data.booking && res.data.booking.id) {
-              var b = res.data.booking;
-              console.log('Booking created:', b.id, 'thread:', res.data.threadId);
+            if (res && res.data && res.data.id) {
+              var bookingId = res.data.id;
+              window.location.href = 'payment.html?bookingId=' + encodeURIComponent(bookingId);
+              return;
             }
           } catch (e) {}
+          loadAll();
         }).catch(function (e2) { toast(e2.message); });
     });
 
@@ -334,9 +520,11 @@
   function bookingCard(b) {
     var route = (b.shipment ? (b.shipment.pickup + ' → ' + b.shipment.dropoff) : '');
     var trans = (b.quote && b.quote.companyName) ? b.quote.companyName : '—';
-    var price = (b.quote && b.quote.pricePennies != null) ? (b.quote.pricePennies / 100).toFixed(2) : '0.00';
+    var price = (b.quote && b.quote.pricePennies != null) ? (b.quote.pricePennies / 100) : 0;
     var idShort = String(b.id || '').slice(0, 10) + '…';
     var threadLink = b.threadId ? ('<a class="small" href="messages.html?threadId=' + encodeURIComponent(b.threadId) + '">Open chat</a>') : '';
+    var paidBadge = b.paid ? '<span class="badge text-bg-success ms-2">PAID</span>' : '<span class="badge text-bg-warning ms-2">UNPAID</span>';
+    var payCta = (!b.paid && b.id) ? ('<a class="btn btn-sm btn-primary" href="payment.html?bookingId=' + encodeURIComponent(b.id) + '"><i class="bi bi-credit-card"></i> Pay now</a>') : '';
     // status buttons
     var statuses = ['BOOKED', 'ENROUTE', 'COLLECTED', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED'];
     var btns = statuses.map(function (s) {
@@ -355,12 +543,13 @@
               '<div>' +
                 '<div class="small text-secondary">booking <span class="code">' + escapeHtml(idShort) + '</span></div>' +
                 '<div class="fw-semibold">' + escapeHtml(route) + '</div>' +
-                '<div class="small text-secondary">Transporter: ' + escapeHtml(trans) + ' · £' + price + '</div>' +
+                '<div class="small text-secondary">Transporter: ' + escapeHtml(trans) + ' · ' + (new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(price)) + '</div>' +
               '</div>' +
               '<div>' + makeStatusBadge(b.status) + '</div>' +
             '</div>' +
-            '<div class="mt-3 d-flex flex-wrap gap-2">' + btns + '</div>' +
+            '<div class="mt-3 d-flex flex-wrap gap-2">' + btns + paidBadge + '</div>' +
             (threadLink ? ('<div class="mt-3">' + threadLink + '</div>') : '') +
+            (payCta ? ('<div class="mt-2">' + payCta + '</div>') : '') +
           '</div>' +
         '</div>' +
       '</li>'
@@ -389,6 +578,7 @@
       if (!t || !t.classList || !t.classList.contains('act-status')) return;
       var id = t.getAttribute('data-id');
       var status = t.getAttribute('data-status');
+      if (status === 'CANCELLED' && !confirm('Are you sure you want to cancel this booking?')) return;
       http('POST', '/api/bookings/' + encodeURIComponent(id) + '/status', { status: status }).then(function () {
         toast('Status → ' + status);
         refreshBookings();
@@ -414,6 +604,7 @@
         '</div>'
       );
     }).join('');
+    try { box.scrollTop = box.scrollHeight; } catch (e) {}
   }
 
   function bootMessages() {
@@ -441,11 +632,48 @@
     window.addEventListener('beforeunload', function(){ try { clearInterval(handle); } catch(e){} });
   }
 
+  // ------------------------ Filters save/load (marketplace & bids) ------------------------
+  var LS_FILTERS_MARKET = 'duff.filters.market';
+  var LS_FILTERS_BIDS = 'duff.filters.bids';
+  function saveFiltersTo(storageKey, fields) {
+    try { localStorage.setItem(storageKey, JSON.stringify(fields)); } catch (e) {}
+  }
+  function loadFiltersFrom(storageKey) {
+    try { return JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (e) { return {}; }
+  }
+  function bindFilterPersistence(storageKey, fieldIds) {
+    var saved = loadFiltersFrom(storageKey);
+    fieldIds.forEach(function(id){
+      var el = qs('#' + id); if (!el) return;
+      if (saved[id] != null) {
+        if (el.type === 'checkbox') el.checked = !!saved[id];
+        else el.value = saved[id];
+      }
+      el.addEventListener('change', function(){
+        var snap = {};
+        fieldIds.forEach(function(fid){
+          var fel = qs('#' + fid); if (!fel) return;
+          snap[fid] = (fel.type === 'checkbox') ? fel.checked : fel.value;
+        });
+        saveFiltersTo(storageKey, snap);
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    if (qs('body.marketplace-page')) {
+      bindFilterPersistence(LS_FILTERS_MARKET, ['f_pickup','f_dropoff','f_pickupDate','f_deliveryDate','f_loadType','f_cargoType','f_service','f_budget','f_weight','f_volume','f_crossBorder','f_adr','f_refrigerated','f_loading','f_unloading','f_packaging','f_urgent','f_flexible','f_weekend']);
+    }
+    if (qs('body.bids-page')) {
+      bindFilterPersistence(LS_FILTERS_BIDS, ['f_pickup','f_dropoff','f_pickupDate','f_deliveryDate','f_loadType','f_service','f_budget','f_weight','f_volume','f_crossBorder','f_adr','f_refrigerated','f_loading','f_unloading','f_packaging','f_urgent','f_flexible','f_weekend']);
+    }
+  });
+
   // ------------------------ Page bootstraps ------------------------
   function boot() {
     // universal
     bootNavbar();
-    bootTokensPanel();
+    bootRoleChooser(); // Add this line to call the new function
 
     // per-page
     refreshHomeShipments();   // if present

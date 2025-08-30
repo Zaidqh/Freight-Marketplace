@@ -1,654 +1,716 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
-  <head>
-    <!-- =========================================================
-         Duff Bros Freight — Loads (Post & Browse Shipments)
-         Fully compatible with assets/common.js & server.js
-         ======================================================= -->
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freight Marketplace — Post Load</title>
+    <meta name="description" content="Post your freight load and get competitive quotes from reliable transporters. Fast, secure, and professional logistics solutions.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Post Load - Freight Marketplace">
+    <meta property="og:description" content="Post your freight load and get competitive quotes from reliable transporters.">
+    <meta property="og:url" content="https://example.com/loads">
+    <meta property="og:image" content="/og.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="assets/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="loads-page">
+    <!-- Skip Link for Accessibility -->
+    <a class="skip-link" href="#content">Skip to content</a>
 
-    <title>Duff Bros Freight — Loads</title>
-
-    <!-- Bootstrap & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
-
-    <!-- Project theme -->
-    <link href="assets/styles.css" rel="stylesheet"/>
-
-    <link rel="icon" href="data:,"/>
-    <meta name="color-scheme" content="dark light"/>
-  </head>
-
-  <body class="bg-body">
-    <!-- =========================================================
-         NAVBAR (sticky, shared on all pages)
-         ======================================================= -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
-      <div class="container">
-        <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="index.html">
-          <i class="bi bi-truck"></i>
-          <span>Duff Bros Freight</span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fmNav" aria-controls="fmNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div id="fmNav" class="collapse navbar-collapse">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="loads.html"><i class="bi bi-box-seam"></i> Post Shipment</a></li>
-            <li class="nav-item"><a class="nav-link" href="bids.html"><i class="bi bi-cash-coin"></i> Quotes</a></li>
-            <li class="nav-item"><a class="nav-link" href="bookings.html"><i class="bi bi-journal-check"></i> Bookings</a></li>
-            <li class="nav-item"><a class="nav-link" href="messages.html"><i class="bi bi-chat-text"></i> Messages</a></li>
-            <li class="nav-item"><a class="nav-link" href="admin.html"><i class="bi bi-shield-lock"></i> Admin</a></li>
-          </ul>
-
-          <!-- Shared quick controls -->
-          <div class="d-flex align-items-center gap-2">
-            <div class="input-group input-group-sm" style="width: 280px">
-              <span class="input-group-text">API</span>
-              <input id="baseUrl" class="form-control" value="http://localhost:3000" aria-label="API base URL"/>
+    <!-- Modern Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" role="navigation" aria-label="Main">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="./assets/duffbroslogo.jpg" alt="Duffbros" class="brand-logo me-2">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="loads.html" aria-current="page">Post Load</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="marketplace.html">Marketplace</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="bids.html">Quotes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="bookings.html">Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="messages.html">Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.html">Admin</a>
+                    </li>
+                </ul>
             </div>
-            <button class="btn btn-sm btn-outline-secondary" id="btnHealth">
-              <i class="bi bi-activity"></i> Health
-            </button>
-            <button class="btn btn-sm btn-danger" id="btnSeed">
-              <i class="bi bi-lightning-charge"></i> Seed
-            </button>
-          </div>
         </div>
-      </div>
     </nav>
 
-    <!-- =========================================================
-         HERO
-         ======================================================= -->
-    <header class="py-5 hero-slate">
-      <div class="container">
-        <div class="row align-items-center g-4">
-          <div class="col-12 col-xl-7 text-white">
-            <span class="badge bg-white text-dark mb-3">Loads</span>
-            <h1 class="display-5 fw-bold lh-sm">Post a shipment &amp; reach verified transporters</h1>
-            <p class="lead text-white-50 mt-2">
-              Add route, dates, weight/volume, and notes. Quotes will arrive quickly. Accept the best to
-              create a booking and open a dedicated message thread.
-            </p>
-            <div class="d-flex flex-wrap gap-3 mt-1 small text-white-75">
-              <span><i class="bi bi-globe"></i> UK ↔ EU cross-border</span>
-              <span><i class="bi bi-clipboard-check"></i> Clear requirements</span>
-              <span><i class="bi bi-bell"></i> Quote notifications</span>
-            </div>
-
-            <!-- Status strip (cosmetic) -->
-            <div class="mt-4 small">
-              <span class="text-white-50">API base: </span>
-              <span class="font-monospace" id="statusBase">http://localhost:3000</span>
-              <span class="mx-2">•</span>
-              <span class="text-white-50">Tip:</span>
-              <span class="font-monospace">Use Seed to preload demo shipments</span>
-            </div>
-          </div>
-
-          <div class="col-12 col-xl-5">
-            <div class="card border-0 shadow-medium">
-              <div class="card-body">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                  <i class="bi bi-info-circle text-primary"></i>
-                  <h2 class="h5 m-0">Posting best practices</h2>
-                </div>
-                <ul class="mb-0 small text-white-50">
-                  <li>Separate fragile goods and mark handling notes clearly.</li>
-                  <li>Include realistic ready dates and access constraints.</li>
-                  <li>For cross-border, mention customs paperwork readiness.</li>
-                  <li>Provide weight/volume estimates — transporters will price faster.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div><!-- /row -->
-      </div>
-    </header>
-
-    <!-- =========================================================
-         POST SHIPMENT FORM
-         (IDs used by assets/common.js: #newShipmentForm, #cb_cross)
-         ======================================================= -->
-    <section class="container py-4" id="post">
-      <div class="row g-4">
-        <div class="col-12 col-xl-7">
-          <div class="card border-0 shadow-soft">
-            <div class="card-header fw-semibold">Post shipment</div>
-            <div class="card-body">
-              <form id="newShipmentForm" class="vstack gap-3">
-                <!-- Title -->
-                <div>
-                  <label class="form-label small">Title <span class="text-secondary">(optional)</span></label>
-                  <input name="title" class="form-control" placeholder="e.g., Household boxes for relocation"/>
-                </div>
-
-                <!-- Route -->
-                <div class="row g-3">
-                  <div class="col-12 col-md-6">
-                    <label class="form-label small">Pickup location</label>
-                    <input name="pickup" class="form-control" placeholder="City, Country" required/>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <label class="form-label small">Dropoff location</label>
-                    <input name="dropoff" class="form-control" placeholder="City, Country" required/>
-                  </div>
-                </div>
-
-                <!-- Dates & cross-border -->
-                <div class="row g-3">
-                  <div class="col-12 col-md-6">
-                    <label class="form-label small">Ready date <span class="text-secondary">(optional)</span></label>
-                    <input name="readyDate" type="date" class="form-control"/>
-                  </div>
-                  <div class="col-12 col-md-6 d-flex align-items-end">
-                    <div class="form-check">
-                      <input id="cb_cross" class="form-check-input" type="checkbox"/>
-                      <label class="form-check-label" for="cb_cross">Cross-border (customs)</label>
+    <!-- Main Content -->
+                    <main id="content" class="container">
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <div class="header-content">
+                            <div class="header-badge">
+                                <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                                Post New Load
+                            </div>
+                            <h1 class="header-title">Post Your Freight Load</h1>
+                            <p class="header-description">
+                                Connect with reliable transporters by posting your shipment details. 
+                                Get competitive quotes within minutes and choose the best option for your needs.
+                            </p>
+                        </div>
                     </div>
-                  </div>
+                    <div class="col-lg-4">
+                        <div class="header-visual">
+                            <div class="header-icon">
+                                <i class="bi bi-box-seam" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Specs -->
-                <div class="row g-3">
-                  <div class="col-12 col-sm-6">
-                    <label class="form-label small">Weight (kg)</label>
-                    <input name="weightKg" inputmode="decimal" class="form-control" placeholder="e.g., 800"/>
-                  </div>
-                  <div class="col-12 col-sm-6">
-                    <label class="form-label small">Volume (m³)</label>
-                    <input name="volumeM3" inputmode="decimal" class="form-control" placeholder="e.g., 6.0"/>
-                  </div>
-                </div>
-
-                <!-- Notes -->
-                <div>
-                  <label class="form-label small">Notes for transporter <span class="text-secondary">(optional)</span></label>
-                  <textarea name="notes" class="form-control" rows="4" placeholder="Access notes, loading preferences, fragile items, etc."></textarea>
-                </div>
-
-                <!-- Actions -->
-                <div class="d-flex flex-wrap gap-2">
-                  <button class="btn btn-primary" type="submit">
-                    <i class="bi bi-plus-circle"></i> Post shipment
-                  </button>
-                  <button class="btn btn-outline-secondary" type="reset">
-                    <i class="bi bi-eraser"></i> Clear
-                  </button>
-                  <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#importModal">
-                    <i class="bi bi-upload"></i> Import CSV
-                  </button>
-                  <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#tipsPanel">
-                    <i class="bi bi-lightbulb"></i> Tips
-                  </button>
-                </div>
-              </form>
-
-              <!-- Small footnote -->
-              <div class="text-secondary small mt-3">
-                By posting, you agree to Duff Bros Freight’s standard marketplace terms and community guidelines.
-              </div>
             </div>
-          </div>
+        </section>
+
+        <!-- Main Content -->
+        <section class="main-content py-5">
+            <div class="container">
+                <div class="row g-4">
+                    <!-- Load Form -->
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title mb-2">
+                                    <i class="bi bi-clipboard-data me-2" aria-hidden="true"></i>
+                                    Load Details
+                                </h3>
+                                <p class="card-subtitle mb-0">Fill in your shipment information to get started</p>
+                            </div>
+                            <div class="card-body">
+                                <form id="newShipmentForm">
+                                    <!-- Basic Information -->
+                                    <div class="mb-4">
+                                        <h4 class="h5 mb-3 text-primary">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            Basic Information
+                                        </h4>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="loadTitle" class="form-label">Load Title</label>
+                                                <input type="text" class="form-control" id="loadTitle" name="title" placeholder="e.g., London to Paris - Electronics" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="loadType" class="form-label">Load Type</label>
+                                                <select class="form-select" id="loadType" name="type" required>
+                                                    <option value="">Select load type</option>
+                                                    <option value="full_truck">Full Truck Load</option>
+                                                    <option value="partial">Partial Load</option>
+                                                    <option value="express">Express Delivery</option>
+                                                    <option value="refrigerated">Refrigerated</option>
+                                                    <option value="hazardous">Hazardous Goods</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Route Information -->
+                                    <div class="mb-4">
+                                        <h4 class="h5 mb-3 text-primary">
+                                            <i class="bi bi-geo-alt me-2"></i>
+                                            Route & Timing
+                                        </h4>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="origin" class="form-label">Origin</label>
+                                                <input type="text" class="form-control" id="origin" name="pickup" placeholder="e.g., London, UK" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="destination" class="form-label">Destination</label>
+                                                <input type="text" class="form-control" id="destination" name="dropoff" placeholder="e.g., Paris, France" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="pickupDate" class="form-label">Pickup Date</label>
+                                                <input type="date" class="form-control" id="pickupDate" name="pickupDate" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="deliveryDate" class="form-label">Delivery Date</label>
+                                                <input type="date" class="form-control" id="deliveryDate" name="deliveryDate" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cargo Details -->
+                                    <div class="mb-4">
+                                        <h4 class="h5 mb-3 text-primary">
+                                            <i class="bi bi-box-seam me-2"></i>
+                                            Cargo Specifications
+                                        </h4>
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label for="weight" class="form-label">Weight (kg)</label>
+                                                <input type="number" class="form-control" id="weight" name="weightKg" placeholder="1000" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="volume" class="form-label">Volume (m³)</label>
+                                                <input type="number" class="form-control" id="volume" name="volumeM3" placeholder="50" step="0.1">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="pallets" class="form-label">Pallets</label>
+                                                <input type="number" class="form-control" id="pallets" name="pallets" placeholder="20">
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="cargoDescription" class="form-label">Cargo Description</label>
+                                                <textarea class="form-control" id="cargoDescription" name="description" rows="3" placeholder="Describe your cargo, special requirements, and any handling instructions..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cargo Type & Temperature -->
+                                    <div class="mb-4">
+                                        <h4 class="h5 mb-3 text-primary">
+                                            <i class="bi bi-tags me-2"></i>
+                                            Cargo Type & Requirements
+                                        </h4>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="cargoType" class="form-label">Primary Cargo Type</label>
+                                                <select class="form-select" id="cargoType" name="cargoType">
+                                                    <option value="">Select cargo type</option>
+                                                    <option value="electronics">Electronics</option>
+                                                    <option value="food_beverage">Food & Beverage</option>
+                                                    <option value="machinery">Machinery</option>
+                                                    <option value="textiles">Textiles & Clothing</option>
+                                                    <option value="automotive">Automotive Parts</option>
+                                                    <option value="chemicals">Chemicals</option>
+                                                    <option value="furniture">Furniture</option>
+                                                    <option value="construction">Construction Materials</option>
+                                                    <option value="other">Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="temperatureControl" class="form-label">Temperature Control</label>
+                                                <select class="form-select" id="temperatureControl" name="temperatureControl">
+                                                    <option value="none">No Temperature Control Required</option>
+                                                    <option value="refrigerated">Refrigerated (2°C to 8°C)</option>
+                                                    <option value="frozen">Frozen (-18°C or below)</option>
+                                                    <option value="chilled">Chilled (8°C to 15°C)</option>
+                                                    <option value="heated">Heated (Above ambient)</option>
+                                                    <option value="controlled">Temperature Controlled (Specify range)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6" id="tempRangeGroup" style="display: none;">
+                                                <label for="tempRange" class="form-label">Temperature Range</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="tempMin" name="tempMin" placeholder="Min °C">
+                                                    <span class="input-group-text">to</span>
+                                                    <input type="number" class="form-control" id="tempMax" name="tempMax" placeholder="Max °C">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="humidityControl" class="form-label">Humidity Control</label>
+                                                <select class="form-select" id="humidityControl" name="humidityControl">
+                                                    <option value="none">No Humidity Control Required</option>
+                                                    <option value="low">Low Humidity (< 30%)</option>
+                                                    <option value="medium">Medium Humidity (30-60%)</option>
+                                                    <option value="high">High Humidity (> 60%)</option>
+                                                    <option value="controlled">Controlled (Specify range)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Urgency & Timing -->
+                                    <div class="mb-4">
+                                        <h4 class="h5 mb-3 text-primary">
+                                            <i class="bi bi-clock me-2"></i>
+                                            Urgency & Timing
+                                        </h4>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="urgencyLevel" class="form-label">Urgency Level</label>
+                                                <select class="form-select" id="urgencyLevel" name="urgencyLevel">
+                                                    <option value="standard">Standard Delivery</option>
+                                                    <option value="urgent">Urgent Delivery</option>
+                                                    <option value="flexible">Flexible Timing</option>
+                                                    <option value="scheduled">Scheduled Delivery</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="deliveryTime" class="form-label">Preferred Delivery Time</label>
+                                                <select class="form-select" id="deliveryTime" name="deliveryTime">
+                                                    <option value="anytime">Any Time</option>
+                                                    <option value="business_hours">Business Hours Only</option>
+                                                    <option value="evening">Evening Delivery</option>
+                                                    <option value="weekend">Weekend Delivery</option>
+                                                    <option value="specific">Specific Time (Specify below)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12" id="specificTimeGroup" style="display: none;">
+                                                <label for="specificTime" class="form-label">Specific Delivery Time</label>
+                                                <input type="text" class="form-control" id="specificTime" name="specificTime" placeholder="e.g., Between 9 AM and 11 AM, or specific date/time">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Service Requirements -->
+                                    <div class="mb-4">
+                                        <h4 class="h5 mb-3 text-primary">
+                                            <i class="bi bi-gear me-2"></i>
+                                            Service Requirements
+                                        </h4>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="serviceLevel" class="form-label">Service Level</label>
+                                                <select class="form-select" id="sel_service" name="service" required>
+                                                    <option value="">Select service level</option>
+                                                    <option value="standard">Standard</option>
+                                                    <option value="express">Express</option>
+                                                    <option value="premium">Premium</option>
+                                                    <option value="economy">Economy</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="budget" class="form-label">Budget Range (€)</label>
+                                                <select class="form-select" id="budget" name="budget">
+                                                    <option value="">No specific budget</option>
+                                                    <option value="0-500">€0 - €500</option>
+                                                    <option value="500-1000">€500 - €1,000</option>
+                                                    <option value="1000-2000">€1,000 - €2,000</option>
+                                                    <option value="2000-5000">€2,000 - €5,000</option>
+                                                    <option value="5000+">€5,000+</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">Additional Services</label>
+                                                <div class="row g-2">
+                                                    <div class="col-md-4">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="loading" name="services" value="loading">
+                                                            <label class="form-check-label" for="loading">
+                                                                <i class="bi bi-arrow-up-circle me-1"></i>
+                                                                Loading Assistance
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="unloading" name="services" value="unloading">
+                                                            <label class="form-check-label" for="unloading">
+                                                                <i class="bi bi-arrow-down-circle me-1"></i>
+                                                                Unloading Assistance
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="packaging" name="services" value="packaging">
+                                                            <label class="form-check-label" for="packaging">
+                                                                <i class="bi bi-box-seam me-1"></i>
+                                                                Packaging
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Special Requirements -->
+                                    <div class="mb-4">
+                                        <h4 class="h5 mb-3 text-primary">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            Special Requirements
+                                        </h4>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="cb_cross" name="crossBorder">
+                                                    <label class="form-check-label" for="cb_cross">
+                                                        <i class="bi bi-globe me-1"></i>
+                                                        Cross-border shipment
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="cb_adr" name="adr">
+                                                    <label class="form-check-label" for="cb_adr">
+                                                        <i class="bi bi-exclamation-triangle me-1"></i>
+                                                        ADR (Dangerous Goods)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contact Information -->
+                                    <div class="mb-4">
+                                        <h4 class="h5 mb-3 text-primary">
+                                            <i class="bi bi-person me-2"></i>
+                                            Contact Information
+                                        </h4>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="contactName" class="form-label">Contact Name</label>
+                                                <input type="text" class="form-control" id="contactName" name="contactName" placeholder="Your full name" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="contactPhone" class="form-label">Phone Number</label>
+                                                <input type="tel" class="form-control" id="contactPhone" name="contactPhone" placeholder="+44 123 456 789">
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="specialInstructions" class="form-label">Special Instructions</label>
+                                                <textarea class="form-control" id="specialInstructions" name="specialInstructions" rows="2" placeholder="Any additional requirements or special instructions for transporters..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Form Actions -->
+                                    <div class="d-flex gap-3 pt-3">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="bi bi-send me-2"></i>
+                                            Post Load
+                                        </button>
+                                        <button type="reset" class="btn btn-outline-secondary btn-lg">
+                                            <i class="bi bi-arrow-clockwise me-2"></i>
+                                            Reset Form
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="col-lg-4">
+                        <div class="d-flex flex-column gap-4">
+                            <!-- Tips Card -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-lightbulb me-2 text-warning"></i>
+                                        Posting Tips
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2 d-flex align-items-start">
+                                            <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                                            <span>Be specific about cargo details and requirements</span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-start">
+                                            <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                                            <span>Set realistic pickup and delivery dates</span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-start">
+                                            <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                                            <span>Include special handling instructions</span>
+                                        </li>
+                                        <li class="d-flex align-items-start">
+                                            <i class="bi bi-check-circle text-success me-2 mt-1"></i>
+                                            <span>Provide clear contact information</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Recent Loads -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-clock-history me-2 text-info"></i>
+                                        Recent Loads
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="shipmentsList">
+                                        <!-- Recent loads will be populated here -->
+                                        <div class="py-3">
+                                            <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <span class="text-muted">Loading recent loads...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Help Card -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <i class="bi bi-question-circle text-primary" style="font-size: 2rem;"></i>
+                                    </div>
+                                    <h6>Need Help?</h6>
+                                    <p class="text-muted small">Our support team is here to help you post your load successfully.</p>
+                                    <a href="mailto:support@duffbros.com" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-envelope me-1"></i>
+                                        Contact Support
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <div class="brand-icon mb-3">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <h5>Duff Bros Freight</h5>
+                        <p>Premium logistics solutions connecting businesses across Europe with reliable, secure, and cost-effective transport services.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Services</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Full Truck Load</a></li>
+                        <li><a href="#">Express Delivery</a></li>
+                        <li><a href="#">International</a></li>
+                        <li><a href="#">Warehousing</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Company</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Support</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Safety</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Contact</h6>
+                    <ul class="footer-links">
+                        <li><i class="bi bi-envelope me-2"></i>info@duffbros.co.uk</li>
+                        <li><i class="bi bi-telephone me-2"></i>+44 7763 686431</li>
+                        <li><i class="bi bi-geo-alt me-2"></i>Chatteris, UK</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 Duff Bros Freight. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Built with ❤️ for the logistics industry</p>
+                </div>
+            </div>
         </div>
-
-        <!-- Right column: quick actions / legend -->
-        <div class="col-12 col-xl-5">
-          <div class="card border-0 shadow-soft">
-            <div class="card-header fw-semibold">Quick actions</div>
-            <div class="card-body">
-              <div class="vstack gap-2">
-                <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#filtersPanel">
-                  <i class="bi bi-funnel"></i> Filters
-                </button>
-                <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#legendPanel">
-                  <i class="bi bi-journal-text"></i> Status legend
-                </button>
-                <a class="btn btn-outline-secondary" href="#list">
-                  <i class="bi bi-list-ul"></i> Jump to shipment list
-                </a>
-              </div>
-
-              <div class="section-divider"></div>
-
-              <div class="small text-secondary">
-                <div class="fw-semibold mb-1">Data model (demo)</div>
-                <ul class="mb-0">
-                  <li><span class="kbd">/api/shipments</span> stores all posted shipments.</li>
-                  <li>Quotes attach to a shipment; accepting one creates a booking.</li>
-                  <li>Booking creation also opens a message thread for collaboration.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="card border-0 shadow-soft mt-3">
-            <div class="card-header fw-semibold">Status legend</div>
-            <div class="card-body small">
-              <div class="row row-cols-2 g-2">
-                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-success">OPEN</span><span class="text-secondary">accepting quotes</span></div>
-                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-primary">BOOKED</span><span class="text-secondary">quote accepted</span></div>
-                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-success">DELIVERED</span><span class="text-secondary">completed</span></div>
-                <div class="col d-flex align-items-center gap-2"><span class="badge text-bg-danger">CANCELLED</span><span class="text-secondary">voided</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div><!-- /row -->
-    </section>
-
-    <!-- =========================================================
-         LIST OF SHIPMENTS (dynamic via assets/common.js)
-         (ID used by assets/common.js: #shipmentsList)
-         ======================================================= -->
-    <section class="container py-4" id="list">
-      <div class="d-flex align-items-end justify-content-between mb-2">
-        <div>
-          <h2 class="h4 fw-bold m-0">All shipments</h2>
-          <div class="text-secondary small">Newest first. Click a card to open quotes.</div>
-        </div>
-        <div class="d-none d-md-flex gap-2">
-          <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#filtersPanel">
-            <i class="bi bi-funnel"></i> Filters
-          </button>
-          <button class="btn btn-sm btn-outline-secondary" id="btnRefreshList">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
-        </div>
-      </div>
-
-      <!-- JS fills this UL with cards -->
-      <ul id="shipmentsList" class="row g-3 list-unstyled">
-        <!-- Skeletons (placeholders) -->
-        <li class="col-12 col-md-6 col-lg-4">
-          <div class="card h-100">
-            <div class="card-body placeholder-wave">
-              <span class="placeholder col-6"></span>
-              <div class="mt-2"><span class="placeholder col-10"></span></div>
-              <div class="mt-2"><span class="placeholder col-4"></span></div>
-            </div>
-          </div>
-        </li>
-        <li class="col-12 col-md-6 col-lg-4 d-none d-md-block">
-          <div class="card h-100">
-            <div class="card-body placeholder-wave">
-              <span class="placeholder col-5"></span>
-              <div class="mt-2"><span class="placeholder col-9"></span></div>
-              <div class="mt-2"><span class="placeholder col-3"></span></div>
-            </div>
-          </div>
-        </li>
-        <li class="col-12 col-md-6 col-lg-4 d-none d-lg-block">
-          <div class="card h-100">
-            <div class="card-body placeholder-wave">
-              <span class="placeholder col-4"></span>
-              <div class="mt-2"><span class="placeholder col-6"></span></div>
-              <div class="mt-2"><span class="placeholder col-7"></span></div>
-            </div>
-          </div>
-        </li>
-      </ul>
-
-      <div class="text-end mt-2">
-        <a class="btn btn-outline-light btn-sm" href="#post"><i class="bi bi-arrow-up"></i> Back to post form</a>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         OPTIONAL MARKETING / LANE PRESETS
-         ======================================================= -->
-    <section class="container py-5">
-      <div class="card">
-        <div class="card-header fw-semibold">Lane presets (optional)</div>
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-12 col-sm-6 col-lg-3">
-              <div class="border rounded p-3 h-100">
-                <div class="d-flex justify-content-between">
-                  <div class="fw-semibold">UK → Spain</div>
-                  <span class="badge text-bg-info">Popular</span>
-                </div>
-                <div class="text-secondary small mt-1">Ibiza / Mallorca specialists</div>
-                <button class="btn btn-soft-primary btn-sm mt-3" data-pickup="Manchester, UK" data-dropoff="Ibiza, ES" data-weight="400" data-volume="3.5">
-                  Use template
-                </button>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-              <div class="border rounded p-3 h-100">
-                <div class="d-flex justify-content-between">
-                  <div class="fw-semibold">UK → France</div>
-                  <span class="badge text-bg-secondary">Regular</span>
-                </div>
-                <div class="text-secondary small mt-1">Nord / Île-de-France</div>
-                <button class="btn btn-soft-primary btn-sm mt-3" data-pickup="Bristol, UK" data-dropoff="Paris, FR" data-weight="600" data-volume="4.8">
-                  Use template
-                </button>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-              <div class="border rounded p-3 h-100">
-                <div class="d-flex justify-content-between">
-                  <div class="fw-semibold">UK Domestic</div>
-                  <span class="badge text-bg-info">Daily</span>
-                </div>
-                <div class="text-secondary small mt-1">Nationwide pickup windows</div>
-                <button class="btn btn-soft-primary btn-sm mt-3" data-pickup="Leeds, UK" data-dropoff="London, UK" data-weight="300" data-volume="2.2">
-                  Use template
-                </button>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-              <div class="border rounded p-3 h-100">
-                <div class="d-flex justify-content-between">
-                  <div class="fw-semibold">Custom move</div>
-                  <span class="badge text-bg-warning">On-demand</span>
-                </div>
-                <div class="text-secondary small mt-1">Events, exhibitions, relocations</div>
-                <button class="btn btn-soft-primary btn-sm mt-3" data-pickup="Cambridge, UK" data-dropoff="Lyon, FR" data-weight="120" data-volume="1.8">
-                  Use template
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="text-secondary small mt-3">
-            Using a template fills the form with a suggested lane — tweak details before posting.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         HTML TEMPLATES (optional, for future client rendering)
-         ======================================================= -->
-    <section class="container pb-5">
-      <div class="card">
-        <div class="card-header fw-semibold">HTML templates</div>
-        <div class="card-body">
-          <p class="text-secondary small">
-            These templates are optional and won’t run by themselves; they’re here if you want to render via JS later.
-          </p>
-
-          <!-- Shipment card template -->
-          <template id="tpl-shipment-card">
-            <li class="col-12 col-md-6 col-lg-4">
-              <div class="card h-100">
-                <div class="card-body d-flex flex-column">
-                  <div class="small text-secondary">id: <span class="code">load-xxxx</span></div>
-                  <div class="fw-semibold">Cambridge, UK → Lyon, FR</div>
-                  <div class="text-secondary small mt-1">Weight 120 kg · Volume 1.8 m³</div>
-                  <div class="mt-2"><span class="badge text-bg-success">OPEN</span></div>
-                  <a class="btn btn-outline-primary mt-auto" href="bids.html?id=load-xxxx">View &amp; quote</a>
-                </div>
-              </div>
-            </li>
-          </template>
-
-          <!-- Skeleton row template -->
-          <template id="tpl-skeleton-col">
-            <li class="col-12 col-md-6 col-lg-4">
-              <div class="card h-100">
-                <div class="card-body placeholder-wave">
-                  <span class="placeholder col-6"></span>
-                  <div class="mt-2"><span class="placeholder col-10"></span></div>
-                  <div class="mt-2"><span class="placeholder col-4"></span></div>
-                </div>
-              </div>
-            </li>
-          </template>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         FAQ / HELP
-         ======================================================= -->
-    <section class="container pb-5">
-      <div class="row g-4">
-        <div class="col-12 col-lg-6">
-          <div class="card h-100">
-            <div class="card-header fw-semibold">FAQ</div>
-            <div class="card-body">
-              <div class="mb-3">
-                <h3 class="h6">How soon will I get quotes?</h3>
-                <p class="text-secondary small mb-0">Often within minutes during business hours. You can track incoming quotes on the Quotes page.</p>
-              </div>
-              <div class="mb-3">
-                <h3 class="h6">What happens after I accept a quote?</h3>
-                <p class="text-secondary small mb-0">A booking is created and a message thread opens automatically to coordinate details.</p>
-              </div>
-              <div class="mb-0">
-                <h3 class="h6">Do I need customs support?</h3>
-                <p class="text-secondary small mb-0">If cross-border is checked, transporters will expect your customs docs; some can assist if needed.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-lg-6">
-          <div class="card h-100">
-            <div class="card-header fw-semibold">Next steps</div>
-            <div class="card-body">
-              <ol class="mb-0">
-                <li>Post one or more shipments here.</li>
-                <li>Open <b>Quotes</b> to compare bids and accept the best.</li>
-                <li>Track progress in <b>Bookings</b> and communicate in <b>Messages</b>.</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         FOOTER
-         ======================================================= -->
-    <footer class="border-top py-4">
-      <div class="container small text-secondary d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <div>© <span id="year">2025</span> Duff Bros Freight — Loads</div>
-        <div class="d-flex align-items-center gap-3">
-          <a class="link-secondary text-decoration-none" href="index.html#lanes">Featured lanes</a>
-          <a class="link-secondary text-decoration-none" href="bids.html">Quotes</a>
-          <a class="link-secondary text-decoration-none" href="bookings.html">Bookings</a>
-          <a class="link-secondary text-decoration-none" href="#post">Post</a>
-        </div>
-      </div>
     </footer>
 
-    <!-- =========================================================
-         OFFCANVAS: Filters
-         ======================================================= -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="filtersPanel" aria-labelledby="filtersLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="filtersLabel"><i class="bi bi-funnel"></i> Filters</h5>
-        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body small">
-        <div class="vstack gap-2">
-          <div>
-            <label class="form-label small">Status</label>
-            <select class="form-select form-select-sm">
-              <option selected>Any</option>
-              <option>OPEN</option>
-              <option>BOOKED</option>
-              <option>DELIVERED</option>
-              <option>CANCELLED</option>
-            </select>
-          </div>
-          <div class="row g-2">
-            <div class="col-12 col-sm-6">
-              <label class="form-label small">Pickup contains</label>
-              <input class="form-control form-control-sm" placeholder="e.g., Bristol"/>
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Duff Bros Freight</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="col-12 col-sm-6">
-              <label class="form-label small">Dropoff contains</label>
-              <input class="form-control form-control-sm" placeholder="e.g., Paris"/>
+            <div id="toastBody" class="toast-body">
+                <!-- Toast content will be populated by JavaScript -->
             </div>
-          </div>
-          <div class="row g-2">
-            <div class="col-6">
-              <label class="form-label small">Min weight (kg)</label>
-              <input class="form-control form-control-sm" inputmode="decimal" placeholder="0"/>
-            </div>
-            <div class="col-6">
-              <label class="form-label small">Max weight (kg)</label>
-              <input class="form-control form-control-sm" inputmode="decimal" placeholder="1000"/>
-            </div>
-          </div>
-          <div class="d-flex gap-2">
-            <button class="btn btn-primary btn-sm disabled">Apply (demo)</button>
-            <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">Close</button>
-          </div>
-          <div class="text-secondary small">Filters are cosmetic in this MVP. Use the Seed button to reset demo data.</div>
         </div>
-      </div>
     </div>
 
-    <!-- =========================================================
-         OFFCANVAS: Status legend (duplicate for quick access)
-         ======================================================= -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="legendPanel" aria-labelledby="legendLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="legendLabel"><i class="bi bi-journal-text"></i> Status legend</h5>
-        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body small text-secondary">
-        <p class="mb-2"><b>OPEN</b> — the shipment is visible to transporters for quoting.</p>
-        <p class="mb-2"><b>BOOKED</b> — a quote was accepted; the job is confirmed.</p>
-        <p class="mb-2"><b>DELIVERED</b> — final status after goods are received.</p>
-        <p class="mb-0"><b>CANCELLED</b> — the shipment was voided.</p>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         OFFCANVAS: Tips (expanded best practices)
-         ======================================================= -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="tipsPanel" aria-labelledby="tipsLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="tipsLabel"><i class="bi bi-lightbulb"></i> Tips</h5>
-        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body small">
-        <ul class="mb-0 text-secondary">
-          <li>For household moves, list boxes and large items separately.</li>
-          <li>For events/exhibitions, include load-in times and on-site contacts.</li>
-          <li>Mark any restricted access (low bridges, time windows, stairs).</li>
-          <li>Attach photos or docs when messaging (after booking).</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         MODAL: Import CSV (optional UX; stub)
-         ======================================================= -->
-    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 id="importLabel" class="modal-title"><i class="bi bi-upload"></i> Import CSV</h5>
-            <button class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body small text-secondary">
-            <p>You can bulk import shipments via CSV in the full app. For the demo, this is UI only.</p>
-            <p class="mb-2">Example headers:</p>
-<pre class="mb-0 kbd">title,pickup,dropoff,readyDate,weightKg,volumeM3,crossBorder,notes</pre>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-            <button class="btn btn-primary disabled">Upload (coming soon)</button>
-          </div>
+    <!-- Offcanvas Side Panel -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidePanel" aria-labelledby="sidePanelLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidePanelLabel">Side Panel</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         SHARED TOAST
-         ======================================================= -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
-      <div id="toast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body" id="toastBody">Ready.</div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        <div id="sidePanelBody" class="offcanvas-body">
+            <!-- Side panel content will be populated by JavaScript -->
         </div>
-      </div>
     </div>
 
-    <!-- =========================================================
-         SHARED RIGHT SIDEBAR (optional detail preview)
-         ======================================================= -->
-    <aside id="sidePanel" class="offcanvas offcanvas-end" tabindex="-1" aria-labelledby="sidePanelLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="sidePanelLabel">Shipment details</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body" id="sidePanelBody">
-        <div class="text-secondary small">Select a shipment card to preview.</div>
-      </div>
-    </aside>
-
-    <!-- =========================================================
-         SCRIPTS
-         ======================================================= -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/common.js" defer></script>
-
+    <!-- Scripts -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="assets/common.js"></script>
+    
+    <!-- Form Logic Script -->
     <script>
-      // Page-local UX helpers (no API logic here; API is handled by assets/common.js)
-      (function(){
-        // Footer year cosmetic
-        var y = document.getElementById('year'); if(y){ y.textContent = String((new Date()).getFullYear()); }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Temperature control logic
+            const temperatureControl = document.getElementById('temperatureControl');
+            const tempRangeGroup = document.getElementById('tempRangeGroup');
+            
+            if (temperatureControl) {
+                temperatureControl.addEventListener('change', function() {
+                    if (this.value === 'controlled') {
+                        tempRangeGroup.style.display = 'block';
+                    } else {
+                        tempRangeGroup.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Delivery time logic
+            const deliveryTime = document.getElementById('deliveryTime');
+            const specificTimeGroup = document.getElementById('specificTimeGroup');
+            
+            if (deliveryTime) {
+                deliveryTime.addEventListener('change', function() {
+                    if (this.value === 'specific') {
+                        specificTimeGroup.style.display = 'block';
+                    } else {
+                        specificTimeGroup.style.display = 'none';
+                    }
+                });
+            }
 
-        // Lane preset buttons → fill the post form with suggested data
-        function qs(sel){ return document.querySelector(sel); }
-        function qsa(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); }
-        function setVal(name, val){ var el = qs('[name="'+name+'"]'); if(el) el.value = val; }
-
-        qsa('[data-pickup][data-dropoff]').forEach(function(btn){
-          btn.addEventListener('click', function(){
-            var p = btn.getAttribute('data-pickup') || '';
-            var d = btn.getAttribute('data-dropoff') || '';
-            var w = btn.getAttribute('data-weight') || '';
-            var v = btn.getAttribute('data-volume') || '';
-            setVal('pickup', p);
-            setVal('dropoff', d);
-            setVal('weightKg', w);
-            setVal('volumeM3', v);
-            var title = p.split(',')[0] + ' → ' + d.split(',')[0];
-            setVal('title', title + ' — preset');
-            // Bring user to post form
-            try { document.getElementById('newShipmentForm').scrollIntoView({ behavior: 'smooth' }); } catch(e){}
-          });
+            // Form submission logic
+            const form = document.getElementById('newShipmentForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitLoad();
+                });
+            }
         });
 
-        // Manual refresh button (calls the exported refresh in common.js if present)
-        var btnRefresh = document.getElementById('btnRefreshList');
-        if(btnRefresh){
-          btnRefresh.addEventListener('click', function(){
-            try { window.scrollTo({ top: document.getElementById('list').offsetTop - 60, behavior: 'smooth' }); } catch(e){}
-            // common.js defines refreshShipmentsList globally via closure bootstrap; call via event
-            setTimeout(function(){
-              // Trigger a small custom event to let common.js refresh (defensive)
-              try {
-                document.dispatchEvent(new CustomEvent('duff.refreshShipments'));
-              } catch(e) {
-                // fallback: no-op; common.js already refreshes on load and after posting
-              }
-            }, 300);
-          });
+        function submitLoad() {
+            // Collect form data
+            const formData = new FormData(document.getElementById('newShipmentForm'));
+            
+            // Get checkbox values
+            const services = [];
+            if (document.getElementById('loading').checked) services.push('loading');
+            if (document.getElementById('unloading').checked) services.push('unloading');
+            if (document.getElementById('packaging').checked) services.push('packaging');
+            
+            const loadData = {
+                title: formData.get('title'),
+                type: formData.get('type'),
+                pickup: formData.get('pickup'),
+                dropoff: formData.get('dropoff'),
+                pickupDate: formData.get('pickupDate'),
+                deliveryDate: formData.get('deliveryDate'),
+                weight: parseInt(formData.get('weightKg')),
+                volume: parseFloat(formData.get('volumeM3')),
+                pallets: parseInt(formData.get('pallets')),
+                cargoType: formData.get('cargoType'),
+                temperatureControl: formData.get('temperatureControl'),
+                tempMin: formData.get('tempMin'),
+                tempMax: formData.get('tempMax'),
+                humidityControl: formData.get('humidityControl'),
+                urgencyLevel: formData.get('urgencyLevel'),
+                deliveryTime: formData.get('deliveryTime'),
+                specificTime: formData.get('specificTime'),
+                service: formData.get('service'),
+                budget: formData.get('budget'),
+                services: services,
+                crossBorder: formData.get('crossBorder') === 'on',
+                adr: formData.get('adr') === 'on',
+                contactName: formData.get('contactName'),
+                contactPhone: formData.get('contactPhone'),
+                description: formData.get('description'),
+                specialInstructions: formData.get('specialInstructions')
+            };
+
+            // Save to localStorage
+            const existingLoads = JSON.parse(localStorage.getItem('duff.marketplace.loads') || '[]');
+            const newLoad = {
+                id: Date.now().toString(),
+                ...loadData,
+                postedDate: new Date().toISOString()
+            };
+            
+            existingLoads.unshift(newLoad);
+            localStorage.setItem('duff.marketplace.loads', JSON.stringify(existingLoads));
+
+            // Show success message
+            showToast('Load posted successfully! Redirecting to marketplace...', 'success');
+            
+            // Redirect to marketplace after a short delay
+            setTimeout(() => {
+                window.location.href = 'marketplace.html';
+            }, 2000);
         }
 
-        // Optional: listen for that custom event elsewhere (not required)
-        document.addEventListener('duff.refreshShipments', function(){
-          // No inline fetching here; assets/common.js does it centrally.
-        });
-      })();
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastBody = document.getElementById('toastBody');
+            
+            toastBody.textContent = message;
+            toast.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'bg-info');
+            toast.classList.add(`bg-${type}`);
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
     </script>
-  </body>
+
+    <!-- Footer (single instance kept above; duplicate removed) -->
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Duff Bros Freight</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div id="toastBody" class="toast-body">
+                <!-- Toast content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Offcanvas Side Panel -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidePanel" aria-labelledby="sidePanelLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidePanelLabel">Side Panel</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div id="sidePanelBody" class="offcanvas-body">
+            <!-- Side panel content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="assets/common.js"></script>
+</body>
 </html>

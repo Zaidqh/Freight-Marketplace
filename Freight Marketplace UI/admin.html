@@ -1,689 +1,552 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
-  <head>
-    <!-- =========================================================
-         Duff Bros Freight — Admin (Controls & Moderation)
-         Fully compatible with assets/common.js & server.js
-         IDs used by JS:
-           - #adminMetrics       : summary KPIs (cards filled by JS)
-           - #verifyList         : pending transporter verification queue
-           - #usersTable         : users list (ban/unban)
-           - #transportersTable  : verified transporters list
-           - #flaggedTable       : flagged shipments moderation
-           - #logsList           : audit log entries
-         Action buttons:
-           - .act-verify[data-id][data-decision="approve|reject"]
-           - .act-ban[data-id][data-ban="1|0"]
-           - .act-hide[data-id][data-hide="1|0"]
-         ======================================================= -->
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freight Marketplace — Admin</title>
+    <meta name="description" content="Monitor system performance, manage users, and oversee operations with comprehensive analytics.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Admin - Freight Marketplace">
+    <meta property="og:description" content="Monitor system performance, manage users, and oversee operations.">
+    <meta property="og:url" content="https://example.com/admin">
+    <meta property="og:image" content="/og.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="assets/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="admin-page">
+    <!-- Skip Link for Accessibility -->
+    <a class="skip-link" href="#content">Skip to content</a>
 
-    <title>Duff Bros Freight — Admin</title>
-
-    <!-- Bootstrap & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
-
-    <!-- Project theme -->
-    <link href="assets/styles.css" rel="stylesheet"/>
-
-    <link rel="icon" href="data:,"/>
-    <meta name="color-scheme" content="dark light"/>
-  </head>
-
-  <body class="bg-body">
-    <!-- =========================================================
-         NAVBAR (sticky, shared across pages)
-         ======================================================= -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
-      <div class="container">
-        <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="index.html">
-          <i class="bi bi-truck"></i>
-          <span>Duff Bros Freight</span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fmNav" aria-controls="fmNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div id="fmNav" class="collapse navbar-collapse">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house"></i> Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="loads.html"><i class="bi bi-box-seam"></i> Post Shipment</a></li>
-            <li class="nav-item"><a class="nav-link" href="bids.html"><i class="bi bi-cash-coin"></i> Quotes</a></li>
-            <li class="nav-item"><a class="nav-link" href="bookings.html"><i class="bi bi-journal-check"></i> Bookings</a></li>
-            <li class="nav-item"><a class="nav-link" href="messages.html"><i class="bi bi-chat-text"></i> Messages</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="admin.html"><i class="bi bi-shield-lock"></i> Admin</a></li>
-          </ul>
-
-          <!-- Shared quick controls -->
-          <div class="d-flex align-items-center gap-2">
-            <div class="input-group input-group-sm" style="width: 280px">
-              <span class="input-group-text">API</span>
-              <input id="baseUrl" class="form-control" value="http://localhost:3000" aria-label="API base URL"/>
+    <!-- Modern Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" role="navigation" aria-label="Main">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="./assets/duffbroslogo.jpg" alt="Duffbros" class="brand-logo me-2">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="loads.html">Post Load</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="marketplace.html">Marketplace</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="bids.html">Quotes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="bookings.html">Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="messages.html">Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="admin.html" aria-current="page">Admin</a>
+                    </li>
+                </ul>
             </div>
-            <button class="btn btn-sm btn-outline-secondary" id="btnHealth">
-              <i class="bi bi-activity"></i> Health
-            </button>
-            <button class="btn btn-sm btn-danger" id="btnSeed">
-              <i class="bi bi-lightning-charge"></i> Seed
-            </button>
-          </div>
         </div>
-      </div>
     </nav>
 
-    <!-- =========================================================
-         HERO
-         ======================================================= -->
-    <header class="py-5 hero-slate">
-      <div class="container">
-        <div class="row align-items-center g-4">
-          <div class="col-12 col-xl-7 text-white">
-            <span class="badge bg-white text-dark mb-3">Admin</span>
-            <h1 class="display-5 fw-bold lh-sm">Control center: verification, moderation &amp; insights</h1>
-            <p class="lead text-white-50 mt-2">
-              Approve transporters, moderate flagged shipments, manage users, and review activity logs.
-              Use the toolbar for health checks and quick actions.
-            </p>
-            <div class="d-flex flex-wrap gap-3 mt-1 small text-white-75">
-              <span><i class="bi bi-patch-check"></i> KYB/KYC</span>
-              <span><i class="bi bi-flag"></i> Moderation</span>
-              <span><i class="bi bi-graph-up"></i> Metrics</span>
-              <span><i class="bi bi-clipboard2-data"></i> Audit logs</span>
-            </div>
-
-            <!-- Status strip (cosmetic) -->
-            <div class="mt-4 small">
-              <span class="text-white-50">API base: </span>
-              <span class="font-monospace" id="statusBase">http://localhost:3000</span>
-              <span class="mx-2">•</span>
-              <span class="text-white-50">Tip:</span>
-              <span class="font-monospace">Use Seed to preload demo approvals & flags</span>
-            </div>
-          </div>
-
-          <div class="col-12 col-xl-5">
-            <div class="card border-0 shadow-medium">
-              <div class="card-body">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                  <i class="bi bi-info-circle text-primary"></i>
-                  <h2 class="h5 m-0">Admin checklist</h2>
-                </div>
-                <ul class="mb-0 small text-white-50">
-                  <li>Review pending transporters (IDs &amp; insurance).</li>
-                  <li>Clear the moderation queue daily.</li>
-                  <li>Spot-check bookings with high dispute risk.</li>
-                  <li>Export logs weekly for audit backup.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div><!-- /row -->
-      </div>
-    </header>
-
-    <!-- =========================================================
-         TOOLBAR
-         ======================================================= -->
-    <section class="container py-3">
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <div class="d-flex flex-wrap align-items-center gap-2">
-          <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#kybPanel">
-            <i class="bi bi-journal-text"></i> KYB checklist
-          </button>
-          <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#actionsHelp">
-            <i class="bi bi-question-circle"></i> Actions help
-          </button>
-          <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#exportPanel">
-            <i class="bi bi-download"></i> Export
-          </button>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-outline-secondary" id="btnRefreshAdmin">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
-          <button class="btn btn-outline-danger" id="btnDangerWipe" data-bs-toggle="modal" data-bs-target="#wipeModal">
-            <i class="bi bi-trash3"></i> Wipe demo data
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         METRICS
-         ======================================================= -->
-    <section class="container pb-4">
-      <div class="card">
-        <div class="card-header fw-semibold">Metrics</div>
-        <div class="card-body">
-          <div id="adminMetrics" class="row g-3">
-            <!-- Populated by JS; skeleton below -->
-            <div class="col-6 col-md-3">
-              <div class="metric placeholder-wave">
-                <div class="small text-secondary">Shipments</div>
-                <div class="val"><span class="placeholder col-4"></span></div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="metric placeholder-wave">
-                <div class="small text-secondary">Quotes</div>
-                <div class="val"><span class="placeholder col-4"></span></div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="metric placeholder-wave">
-                <div class="small text-secondary">Bookings</div>
-                <div class="val"><span class="placeholder col-4"></span></div>
-              </div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="metric placeholder-wave">
-                <div class="small text-secondary">Pending KYB</div>
-                <div class="val"><span class="placeholder col-4"></span></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="text-secondary small mt-2">
-            Counts reflect the current environment. Use <b>Seed</b> or <b>Wipe</b> to reset demo state.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         VERIFICATION QUEUE (Transporters awaiting approval)
-         ======================================================= -->
-    <section class="container pb-4">
-      <div class="card">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <span class="fw-semibold">Transporter verification queue</span>
-          <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#kybPanel">
-              <i class="bi bi-patch-check"></i> KYB guide
-            </button>
-            <button class="btn btn-sm btn-outline-secondary" id="btnRefreshQueue">
-              <i class="bi bi-arrow-clockwise"></i> Refresh
-            </button>
-          </div>
-        </div>
-        <div class="card-body">
-          <ul id="verifyList" class="row g-3 list-unstyled">
-            <!-- Skeleton cards -->
-            <li class="col-12 col-lg-6">
-              <div class="card h-100">
-                <div class="card-body placeholder-wave">
-                  <div><span class="placeholder col-6"></span></div>
-                  <div class="mt-2"><span class="placeholder col-8"></span></div>
-                  <div class="mt-3"><span class="placeholder col-5"></span></div>
-                </div>
-              </div>
-            </li>
-            <li class="col-12 col-lg-6 d-none d-lg-block">
-              <div class="card h-100">
-                <div class="card-body placeholder-wave">
-                  <div><span class="placeholder col-5"></span></div>
-                  <div class="mt-2"><span class="placeholder col-9"></span></div>
-                  <div class="mt-3"><span class="placeholder col-4"></span></div>
-                </div>
-              </div>
-            </li>
-          </ul>
-
-          <div class="text-secondary small">
-            Approvals unlock quoting and booking access. Rejections keep the account in read-only.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         USERS & TRANSPORTERS
-         ======================================================= -->
-    <section class="container pb-4">
-      <div class="row g-3">
-        <!-- Users -->
-        <div class="col-12 col-xl-6">
-          <div class="card h-100">
-            <div class="card-header d-flex align-items-center justify-content-between">
-              <span class="fw-semibold">Users</span>
-              <div class="input-group input-group-sm" style="width:260px">
-                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                <input id="usersSearch" class="form-control" placeholder="Filter (client-side)"/>
-              </div>
-            </div>
-            <div class="table-responsive">
-              <table id="usersTable" class="table table-dark table-hover align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th style="width:18%">User</th>
-                    <th style="width:22%">Email</th>
-                    <th style="width:16%">Role</th>
-                    <th style="width:14%">Status</th>
-                    <th style="width:30%" class="text-end">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Filled by JS; sample skeleton rows -->
-                  <tr>
-                    <td><span class="placeholder col-8"></span></td>
-                    <td><span class="placeholder col-10"></span></td>
-                    <td><span class="placeholder col-5"></span></td>
-                    <td><span class="placeholder col-6"></span></td>
-                    <td class="text-end"><span class="placeholder col-7"></span></td>
-                  </tr>
-                  <tr>
-                    <td><span class="placeholder col-6"></span></td>
-                    <td><span class="placeholder col-8"></span></td>
-                    <td><span class="placeholder col-4"></span></td>
-                    <td><span class="placeholder col-5"></span></td>
-                    <td class="text-end"><span class="placeholder col-6"></span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="card-footer small text-secondary">
-              Roles: <span class="kbd">shipper</span>, <span class="kbd">transporter</span>, <span class="kbd">admin</span>.
-            </div>
-          </div>
-        </div>
-
-        <!-- Transporters (verified) -->
-        <div class="col-12 col-xl-6">
-          <div class="card h-100">
-            <div class="card-header d-flex align-items-center justify-content-between">
-              <span class="fw-semibold">Verified transporters</span>
-              <div class="input-group input-group-sm" style="width:260px">
-                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                <input id="transporterSearch" class="form-control" placeholder="Filter (client-side)"/>
-              </div>
-            </div>
-            <div class="table-responsive">
-              <table id="transportersTable" class="table table-dark table-hover align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th style="width:24%">Company</th>
-                    <th style="width:22%">Contact</th>
-                    <th style="width:18%">Insurance</th>
-                    <th style="width:16%">Since</th>
-                    <th style="width:20%" class="text-end">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- JS fills; skeletons -->
-                  <tr>
-                    <td><span class="placeholder col-8"></span></td>
-                    <td><span class="placeholder col-8"></span></td>
-                    <td><span class="placeholder col-5"></span></td>
-                    <td><span class="placeholder col-4"></span></td>
-                    <td class="text-end"><span class="placeholder col-7"></span></td>
-                  </tr>
-                  <tr>
-                    <td><span class="placeholder col-6"></span></td>
-                    <td><span class="placeholder col-9"></span></td>
-                    <td><span class="placeholder col-4"></span></td>
-                    <td><span class="placeholder col-5"></span></td>
-                    <td class="text-end"><span class="placeholder col-6"></span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="card-footer small text-secondary">
-              Actions include temporary suspension (<span class="kbd">ban</span>) in case of repeated policy violations.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         MODERATION (Flagged shipments)
-         ======================================================= -->
-    <section class="container pb-4">
-      <div class="card">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <span class="fw-semibold">Flagged shipments</span>
-          <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-sm btn-outline-secondary" id="btnRefreshFlagged"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
-            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#actionsHelp"><i class="bi bi-question-circle"></i></button>
-          </div>
-        </div>
-        <div class="table-responsive">
-          <table id="flaggedTable" class="table table-dark table-hover align-middle mb-0">
-            <thead>
-              <tr>
-                <th style="width:22%">Shipment</th>
-                <th style="width:22%">Route</th>
-                <th style="width:18%">Reason</th>
-                <th style="width:18%">Reporter</th>
-                <th style="width:20%" class="text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- JS fills; skeletons -->
-              <tr>
-                <td><span class="placeholder col-8"></span></td>
-                <td><span class="placeholder col-9"></span></td>
-                <td><span class="placeholder col-5"></span></td>
-                <td><span class="placeholder col-6"></span></td>
-                <td class="text-end"><span class="placeholder col-7"></span></td>
-              </tr>
-              <tr>
-                <td><span class="placeholder col-6"></span></td>
-                <td><span class="placeholder col-7"></span></td>
-                <td><span class="placeholder col-4"></span></td>
-                <td><span class="placeholder col-5"></span></td>
-                <td class="text-end"><span class="placeholder col-6"></span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer small text-secondary">
-          Hiding removes the shipment from public lists but keeps it accessible to admins for review.
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         LOGS
-         ======================================================= -->
-    <section class="container pb-4">
-      <div class="card">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <span class="fw-semibold">Audit logs</span>
-          <button class="btn btn-sm btn-outline-secondary" id="btnRefreshLogs"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
-        </div>
-        <div class="card-body">
-          <ul id="logsList" class="vstack gap-2 list-unstyled">
-            <!-- Skeleton entries -->
-            <li class="border rounded p-2 placeholder-wave">
-              <div><span class="placeholder col-4"></span></div>
-              <div class="mt-1"><span class="placeholder col-8"></span></div>
-            </li>
-            <li class="border rounded p-2 placeholder-wave">
-              <div><span class="placeholder col-3"></span></div>
-              <div class="mt-1"><span class="placeholder col-6"></span></div>
-            </li>
-          </ul>
-          <div class="text-end mt-2">
-            <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="offcanvas" data-bs-target="#exportPanel">
-              <i class="bi bi-download"></i> Export logs
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         HTML TEMPLATES (Optional helpers)
-         ======================================================= -->
-    <section class="container pb-5">
-      <div class="card">
-        <div class="card-header fw-semibold">HTML templates (optional)</div>
-        <div class="card-body">
-          <p class="text-secondary small">
-            These templates are optional helpers if you’d like to render admin rows client-side.
-          </p>
-
-          <!-- Verification card template -->
-          <template id="tpl-verify-card">
-            <li class="col-12 col-lg-6">
-              <div class="card h-100">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <div class="fw-semibold">Company Ltd</div>
-                      <div class="small text-secondary">ops@example.com · GB123456</div>
-                      <div class="small text-secondary mt-1">Insurance: CMR · Exp 2026-01-31</div>
+    <!-- Main Content -->
+                    <main id="content" class="container">
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <div class="header-content">
+                            <div class="header-badge">
+                                <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                                Admin Dashboard
+                            </div>
+                            <h1 class="header-title">Admin Dashboard</h1>
+                            <p class="header-description">
+                                Monitor system performance, manage users, and oversee operations with comprehensive analytics.
+                            </p>
+                        </div>
                     </div>
-                    <span class="badge text-bg-warning">PENDING</span>
-                  </div>
-                  <div class="mt-3 d-flex gap-2">
-                    <button class="btn btn-sm btn-success act-verify" data-id="user-xxxx" data-decision="approve">Approve</button>
-                    <button class="btn btn-sm btn-danger act-verify" data-id="user-xxxx" data-decision="reject">Reject</button>
-                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#kybPanel">Checklist</button>
-                  </div>
+                    <div class="col-lg-4">
+                        <div class="header-visual">
+                            <div class="header-icon">
+                                <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </li>
-          </template>
+            </div>
+        </section>
 
-          <!-- Users table row -->
-          <template id="tpl-user-row">
-            <tr>
-              <td>Jane Doe</td>
-              <td>jane@example.com</td>
-              <td>shipper</td>
-              <td><span class="badge text-bg-success">ACTIVE</span></td>
-              <td class="text-end">
-                <button class="btn btn-sm btn-outline-danger act-ban" data-id="user-xxxx" data-ban="1">Ban</button>
-              </td>
-            </tr>
-          </template>
+        <!-- Main Content -->
+        <section class="main-content py-5">
+            <div class="container">
+                <!-- Stats Overview -->
+                <div class="row g-4 mb-5" id="adminMetrics">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-gradient-primary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-lg me-3">
+                                        <i class="bi bi-box" aria-hidden="true"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-1" id="totalShipments">0</h3>
+                                        <p class="mb-0">Total Shipments</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-gradient-secondary text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-lg me-3">
+                                        <i class="bi bi-cash-coin" aria-hidden="true"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-1" id="totalQuotes">0</h3>
+                                        <p class="mb-0">Active Quotes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-gradient-success text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-lg me-3">
+                                        <i class="bi bi-check-circle" aria-hidden="true"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-1" id="totalBookings">0</h3>
+                                        <p class="mb-0">Confirmed Bookings</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card bg-gradient-accent text-white h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-lg me-3">
+                                        <i class="bi bi-people" aria-hidden="true"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-1" id="totalUsers">0</h3>
+                                        <p class="mb-0">Registered Users</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-          <!-- Transporter row -->
-          <template id="tpl-transporter-row">
-            <tr>
-              <td>Trans Euro Freight</td>
-              <td>ops@trans-euro.com</td>
-              <td>CMR (2026)</td>
-              <td>2025-05-02</td>
-              <td class="text-end">
-                <button class="btn btn-sm btn-outline-danger act-ban" data-id="user-xxxx" data-ban="1">Suspend</button>
-              </td>
-            </tr>
-          </template>
+                <!-- Main Content Tabs -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="nav nav-tabs card-header-tabs" id="adminTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="shipments-tab" data-bs-toggle="tab" data-bs-target="#shipments" type="button" role="tab">
+                                            <i class="bi bi-box me-2" aria-hidden="true"></i>
+                                            Shipments
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="quotes-tab" data-bs-toggle="tab" data-bs-target="#quotes" type="button" role="tab">
+                                            <i class="bi bi-cash-coin me-2" aria-hidden="true"></i>
+                                            Quotes
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings" type="button" role="tab">
+                                            <i class="bi bi-check-circle me-2" aria-hidden="true"></i>
+                                            Bookings
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                                            <i class="bi bi-people me-2" aria-hidden="true"></i>
+                                            Users
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                                            <i class="bi bi-graph-up me-2" aria-hidden="true"></i>
+                                            Analytics
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div class="tab-content" id="adminTabsContent">
+                                    <!-- Shipments Tab -->
+                                    <div class="tab-pane fade show active" id="shipments" role="tabpanel">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0">Shipment Management</h5>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" onclick="refreshShipments()">
+                                                    <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>
+                                                    Refresh
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" onclick="exportShipments()">
+                                                    <i class="bi bi-download me-1" aria-hidden="true"></i>
+                                                    Export Data
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="table-responsive">
+                                            <table class="table table-dark table-hover align-middle" id="shipmentsTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Origin</th>
+                                                        <th>Destination</th>
+                                                        <th>Status</th>
+                                                        <th>Posted By</th>
+                                                        <th>Posted Date</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="shipmentsTableBody">
+                                                    <!-- Shipments will be populated here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
 
-          <!-- Flagged shipment row -->
-          <template id="tpl-flagged-row">
-            <tr>
-              <td>load-xxxx</td>
-              <td>London → Berlin</td>
-              <td>Content</td>
-              <td>user-xxxx</td>
-              <td class="text-end">
-                <button class="btn btn-sm btn-outline-secondary act-hide" data-id="load-xxxx" data-hide="1">Hide</button>
-                <button class="btn btn-sm btn-outline-success act-hide" data-id="load-xxxx" data-hide="0">Unhide</button>
-              </td>
-            </tr>
-          </template>
+                                    <!-- Quotes Tab -->
+                                    <div class="tab-pane fade" id="quotes" role="tabpanel">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0">Quote Management</h5>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" onclick="refreshQuotes()">
+                                                    <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>
+                                                    Refresh
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" onclick="exportQuotes()">
+                                                    <i class="bi bi-download me-1" aria-hidden="true"></i>
+                                                    Export Data
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="table-responsive">
+                                            <table class="table table-dark table-hover align-middle" id="quotesTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Shipment</th>
+                                                        <th>Transporter</th>
+                                                        <th>Price</th>
+                                                        <th>Status</th>
+                                                        <th>Submitted Date</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="quotesTableBody">
+                                                    <!-- Quotes will be populated here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
 
-          <!-- Log entry -->
-          <template id="tpl-log-item">
-            <li class="border rounded p-2">
-              <div class="small text-secondary">2025-08-16 12:00</div>
-              <div>admin approved <span class="code">user-xxxx</span></div>
-            </li>
-          </template>
+                                    <!-- Bookings Tab -->
+                                    <div class="tab-pane fade" id="bookings" role="tabpanel">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0">Booking Management</h5>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" onclick="refreshBookings()">
+                                                    <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>
+                                                    Refresh
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" onclick="exportBookings()">
+                                                    <i class="bi bi-download me-1" aria-hidden="true"></i>
+                                                    Export Data
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="table-responsive">
+                                            <table class="table table-dark table-hover align-middle" id="bookingsTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Shipment</th>
+                                                        <th>Transporter</th>
+                                                        <th>Price</th>
+                                                        <th>Status</th>
+                                                        <th>Created Date</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="bookingsTableBody">
+                                                    <!-- Bookings will be populated here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!-- Users Tab -->
+                                    <div class="tab-pane fade" id="users" role="tabpanel">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0">User Management</h5>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" onclick="refreshUsers()">
+                                                    <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>
+                                                    Refresh
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" onclick="exportUsers()">
+                                                    <i class="bi bi-download me-1" aria-hidden="true"></i>
+                                                    Export Data
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="table-responsive">
+                                            <table class="table table-dark table-hover align-middle" id="usersTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>Name</th>
+                                                        <th>Email</th>
+                                                        <th>Role</th>
+                                                        <th>Status</th>
+                                                        <th>Created Date</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="usersTableBody">
+                                                    <!-- Users will be populated here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!-- Analytics Tab -->
+                                    <div class="tab-pane fade" id="analytics" role="tabpanel">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0">System Analytics</h5>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" onclick="refreshAnalytics()">
+                                                    <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>
+                                                    Refresh
+                                                </button>
+                                                <button class="btn btn-primary btn-sm" onclick="exportAnalytics()">
+                                                    <i class="bi bi-download me-1" aria-hidden="true"></i>
+                                                    Export Data
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row g-4">
+                                            <div class="col-md-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h6 class="mb-0">System Health</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="systemHealth">
+                                                            <!-- System health info will be populated here -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h6 class="mb-0">Recent Activity</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="recentActivity">
+                                                            <!-- Recent activity will be populated here -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification Queue -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-shield-check me-2" aria-hidden="true"></i>
+                                    Verification Queue
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="verifyList">
+                                    <!-- Verification items will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flagged Items -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-flag me-2" aria-hidden="true"></i>
+                                    Flagged Items
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="flaggedTable">
+                                    <!-- Flagged items will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Logs -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-journal-text me-2" aria-hidden="true"></i>
+                                    System Logs
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="logsList">
+                                    <!-- System logs will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <div class="brand-icon mb-3">
+                            <i class="bi bi-truck" aria-hidden="true"></i>
+                        </div>
+                        <h5>Duff Bros Freight</h5>
+                        <p>Premium logistics solutions connecting businesses across Europe with reliable, secure, and cost-effective transport services.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Services</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Full Truck Load</a></li>
+                        <li><a href="#">Express Delivery</a></li>
+                        <li><a href="#">International</a></li>
+                        <li><a href="#">Warehousing</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Company</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Support</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Safety</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Contact</h6>
+                    <ul class="footer-links">
+                        <li><i class="bi bi-envelope me-2" aria-hidden="true"></i>info@duffbros.co.uk</li>
+                        <li><i class="bi bi-telephone me-2" aria-hidden="true"></i>+44 7763 686431</li>
+                        <li><i class="bi bi-geo-alt me-2" aria-hidden="true"></i>Chatteris, UK</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 Duff Bros Freight. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Built with ❤️ for the logistics industry</p>
+                </div>
+            </div>
         </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         FOOTER
-         ======================================================= -->
-    <footer class="border-top py-4">
-      <div class="container small text-secondary d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <div>© <span id="year">2025</span> Duff Bros Freight — Admin</div>
-        <div class="d-flex align-items-center gap-3">
-          <a class="link-secondary text-decoration-none" href="loads.html">Loads</a>
-          <a class="link-secondary text-decoration-none" href="bids.html">Quotes</a>
-          <a class="link-secondary text-decoration-none" href="bookings.html">Bookings</a>
-          <a class="link-secondary text-decoration-none" href="messages.html">Messages</a>
-        </div>
-      </div>
     </footer>
 
-    <!-- =========================================================
-         OFFCANVAS: KYB Checklist
-         ======================================================= -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="kybPanel" aria-labelledby="kybLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="kybLabel"><i class="bi bi-journal-text"></i> KYB / Transporter checklist</h5>
-        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body small">
-        <ol class="text-secondary mb-3">
-          <li>Company registration (UK/EU) verified.</li>
-          <li>Insurance: CMR / Goods-in-Transit in date.</li>
-          <li>Fleet details (vehicle types, capacity).</li>
-          <li>Cross-border compliance (EORI, permits).</li>
-          <li>References or track record on lanes.</li>
-        </ol>
-        <div class="alert alert-dark border small mb-0">
-          <i class="bi bi-info-circle"></i> In production, upload/preview documents here and store attestations on the profile.
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Duff Bros Freight</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div id="toastBody" class="toast-body">
+                <!-- Toast content will be populated by JavaScript -->
+            </div>
         </div>
-      </div>
     </div>
 
-    <!-- =========================================================
-         OFFCANVAS: Actions help
-         ======================================================= -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="actionsHelp" aria-labelledby="actionsHelpLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="actionsHelpLabel"><i class="bi bi-question-circle"></i> Admin actions help</h5>
-        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body small">
-        <ul class="text-secondary mb-0">
-          <li><b>Approve</b> lets the transporter quote and accept bookings.</li>
-          <li><b>Reject</b> keeps the account read-only; they can re-apply.</li>
-          <li><b>Ban/Suspend</b> blocks access temporarily; use for violations.</li>
-          <li><b>Hide</b> removes flagged shipments from public lists.</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         OFFCANVAS: Export (stub)
-         ======================================================= -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="exportPanel" aria-labelledby="exportLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="exportLabel"><i class="bi bi-download"></i> Export</h5>
-        <button class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body small">
-        <p class="text-secondary">CSV structure (example):</p>
-<pre class="kbd mb-3">type,timestamp,actor,subject,detail
-log,2025-08-16T12:00:00Z,admin,user-123,approved transporter
-flag,2025-08-16T12:05:00Z,system,load-456,auto-flag content
-</pre>
-        <div class="d-flex gap-2">
-          <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">Close</button>
-          <button class="btn btn-primary btn-sm disabled">Download CSV (coming soon)</button>
+    <!-- Offcanvas Side Panel -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidePanel" aria-labelledby="sidePanelLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidePanelLabel">Side Panel</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         MODAL: Wipe demo data (danger)
-         ======================================================= -->
-    <div class="modal fade" id="wipeModal" tabindex="-1" aria-labelledby="wipeLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 id="wipeLabel" class="modal-title text-danger"><i class="bi bi-exclamation-triangle"></i> Wipe demo data</h5>
-            <button class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body small text-secondary">
-            This clears demo shipments, quotes, bookings, messages, users, and logs. Use only in non-production environments.
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button class="btn btn-danger" id="btnConfirmWipe">Wipe</button>
-          </div>
+        <div id="sidePanelBody" class="offcanvas-body">
+            <!-- Side panel content will be populated by JavaScript -->
         </div>
-      </div>
     </div>
 
-    <!-- =========================================================
-         SHARED RIGHT SIDEBAR (optional preview)
-         ======================================================= -->
-    <aside id="sidePanel" class="offcanvas offcanvas-end" tabindex="-1" aria-labelledby="sidePanelLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="sidePanelLabel">Details</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body" id="sidePanelBody">
-        <div class="text-secondary small">Select a row to preview details here (future enhancement).</div>
-      </div>
-    </aside>
-
-    <!-- =========================================================
-         SHARED TOAST
-         ======================================================= -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
-      <div id="toast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body" id="toastBody">Ready.</div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- =========================================================
-         SCRIPTS
-         ======================================================= -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/common.js" defer></script>
-
-    <script>
-      // Page-local admin UI sugar.
-      // All network calls & rendering are handled by assets/common.js.
-      (function(){
-        'use strict';
-        function qs(s){ return document.querySelector(s); }
-        function on(el, ev, fn){ if(el) el.addEventListener(ev, fn); }
-        function toast(msg){
-          var el = qs('#toast'), body = qs('#toastBody');
-          if(!el || !body || !window.bootstrap || !bootstrap.Toast){ console.log(msg); return; }
-          body.textContent = msg;
-          new bootstrap.Toast(el).show();
-        }
-
-        // Footer year cosmetic
-        var y = document.getElementById('year'); if(y){ y.textContent = String((new Date()).getFullYear()); }
-
-        // Manual refresh triggers (common.js listens or just re-fetches on page load)
-        on(qs('#btnRefreshAdmin'), 'click', function(){ try { window.location.hash = '#refresh-' + Date.now(); } catch(e){} });
-        on(qs('#btnRefreshQueue'), 'click', function(){ try { window.location.hash = '#queue-' + Date.now(); } catch(e){} });
-        on(qs('#btnRefreshFlagged'), 'click', function(){ try { window.location.hash = '#flagged-' + Date.now(); } catch(e){} });
-        on(qs('#btnRefreshLogs'), 'click', function(){ try { window.location.hash = '#logs-' + Date.now(); } catch(e){} });
-
-        // Client-side filters (UX only; non-destructive)
-        function filterTable(inputSel, tableSel){
-          var i = qs(inputSel), t = qs(tableSel); if(!i || !t) return;
-          on(i, 'input', function(){
-            var q = i.value.toLowerCase();
-            t.querySelectorAll('tbody tr').forEach(function(r){
-              var txt = r.textContent.toLowerCase();
-              r.style.display = txt.indexOf(q) >= 0 ? '' : 'none';
-            });
-          });
-        }
-        filterTable('#usersSearch', '#usersTable');
-        filterTable('#transporterSearch', '#transportersTable');
-
-        // Confirm wipe (danger). The actual wipe is executed by common.js if it hooks #btnConfirmWipe click.
-        on(qs('#btnConfirmWipe'), 'click', function(){
-          toast('Requested demo data wipe…');
-          // common.js should handle the real API request (DELETE /api/admin/wipe or similar)
-        });
-
-        // Optional: Delegated click preview to show side panel on row/card click (cosmetic)
-        ['#verifyList','#usersTable','#transportersTable','#flaggedTable'].forEach(function(sel){
-          var root = qs(sel);
-          on(root, 'click', function(ev){
-            var side = qs('#sidePanel'); if(!side) return;
-            var body = qs('#sidePanelBody'); if(!body) return;
-            var data = (ev.target.closest('tr')||ev.target.closest('.card'))?.textContent || 'Selected item';
-            body.innerHTML = '<div class="small text-secondary">' + (data.replace(/</g,'&lt;')) + '</div>';
-            try { new bootstrap.Offcanvas(side).show(); } catch(e){}
-          });
-        });
-      })();
-    </script>
-  </body>
+            <!-- Scripts -->
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script defer src="assets/common.js"></script>
+</body>
 </html>

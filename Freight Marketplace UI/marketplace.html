@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freight Marketplace — Marketplace</title>
+    <meta name="description" content="Browse thousands of available freight loads from verified shippers. Filter by route, cargo type, and requirements.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Marketplace - Freight Marketplace">
+    <meta property="og:description" content="Browse thousands of available freight loads from verified shippers.">
+    <meta property="og:url" content="https://example.com/marketplace">
+    <meta property="og:image" content="/og.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="assets/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="marketplace-page">
+    <!-- Skip Link for Accessibility -->
+    <a class="skip-link" href="#content">Skip to content</a>
+
+    <!-- Modern Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" role="navigation" aria-label="Main">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="./assets/duffbroslogo.jpg" alt="Duffbros" class="brand-logo me-2">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="loads.html">Post Load</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="marketplace.html" aria-current="page">Marketplace</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="bids.html">Quotes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="bookings.html">Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="messages.html">Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.html">Admin</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+                    <main id="content" class="container">
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <div class="header-content">
+                            <div class="header-badge mb-3">
+                                <i class="bi bi-shop me-2" aria-hidden="true"></i>
+                                Live Marketplace
+                            </div>
+                            <h1 class="header-title mb-3">Find Your Perfect Load</h1>
+                            <p class="header-description mb-4">
+                                Browse thousands of available freight loads from verified shippers. 
+                                Filter by route, cargo type, and requirements to find loads that match your capabilities.
+                            </p>
+                            <div class="header-stats d-flex gap-4">
+                                <div class="stat-item">
+                                    <div class="stat-number text-primary fw-bold">2,847</div>
+                                    <div class="stat-label text-muted small">Active Loads</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number text-success fw-bold">156</div>
+                                    <div class="stat-label text-muted small">New Today</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number text-info fw-bold">89%</div>
+                                    <div class="stat-label text-muted small">Success Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="header-visual">
+                            <div class="header-icon mb-3">
+                                <i class="bi bi-search display-1 text-primary opacity-25" aria-hidden="true"></i>
+                            </div>
+                            <div class="header-illustration">
+                                <div class="illustration-card bg-primary bg-opacity-10 p-3 rounded-3">
+                                    <i class="bi bi-truck text-primary fs-1" aria-hidden="true"></i>
+                                    <p class="text-muted small mb-0 mt-2">Smart Matching</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <section class="main-content py-5">
+            <div class="container">
+                <!-- Filters Section -->
+                <div class="filters-section mb-5">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-funnel me-2"></i>
+                                Search & Filter Loads
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Basic Route Filters -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-3 small text-uppercase fw-semibold">
+                                        <i class="bi bi-geo-alt me-2"></i>
+                                        Route Information
+                                    </h6>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="f_pickup" class="form-label">Origin</label>
+                                    <input type="text" class="form-control" id="f_pickup" placeholder="e.g., London">
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="f_dropoff" class="form-label">Destination</label>
+                                    <input type="text" class="form-control" id="f_dropoff" placeholder="e.g., Paris">
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="f_pickupDate" class="form-label">Pickup Date</label>
+                                    <input type="date" class="form-control" id="f_pickupDate">
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label for="f_deliveryDate" class="form-label">Delivery Date</label>
+                                    <input type="date" class="form-control" id="f_deliveryDate">
+                                </div>
+                            </div>
+
+                            <!-- Load Type & Service Filters -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-3 small text-uppercase fw-semibold">
+                                        <i class="bi bi-box-seam me-2"></i>
+                                        Load Specifications
+                                    </h6>
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6">
+                                    <label for="f_loadType" class="form-label">Load Type</label>
+                                    <select class="form-select" id="f_loadType">
+                                        <option value="">All Types</option>
+                                        <option value="full_truck">Full Truck</option>
+                                        <option value="partial">Partial Load</option>
+                                        <option value="express">Express</option>
+                                        <option value="refrigerated">Refrigerated</option>
+                                        <option value="hazardous">Hazardous</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6">
+                                    <label for="f_cargoType" class="form-label">Cargo Type</label>
+                                    <select class="form-select" id="f_cargoType">
+                                        <option value="">All Cargo</option>
+                                        <option value="electronics">Electronics</option>
+                                        <option value="food_beverage">Food & Beverage</option>
+                                        <option value="machinery">Machinery</option>
+                                        <option value="textiles">Textiles</option>
+                                        <option value="automotive">Automotive</option>
+                                        <option value="chemicals">Chemicals</option>
+                                        <option value="furniture">Furniture</option>
+                                        <option value="construction">Construction</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6">
+                                    <label for="f_service" class="form-label">Service Level</label>
+                                    <select class="form-select" id="f_service">
+                                        <option value="">All Services</option>
+                                        <option value="standard">Standard</option>
+                                        <option value="express">Express</option>
+                                        <option value="premium">Premium</option>
+                                        <option value="economy">Economy</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6">
+                                    <label for="f_budget" class="form-label">Budget Range</label>
+                                    <select class="form-select" id="f_budget">
+                                        <option value="">Any Budget</option>
+                                        <option value="0-500">€0 - €500</option>
+                                        <option value="500-1000">€500 - €1,000</option>
+                                        <option value="1000-2000">€1,000 - €2,000</option>
+                                        <option value="2000-5000">€2,000 - €5,000</option>
+                                        <option value="5000+">€5,000+</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6">
+                                    <label for="f_weight" class="form-label">Max Weight (kg)</label>
+                                    <input type="number" class="form-control" id="f_weight" placeholder="e.g., 1000">
+                                </div>
+                                <div class="col-lg-2 col-md-4 col-sm-6">
+                                    <label for="f_volume" class="form-label">Max Volume (m³)</label>
+                                    <input type="number" class="form-control" id="f_volume" placeholder="e.g., 50">
+                                </div>
+                            </div>
+
+                            <!-- Special Requirements -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-3 small text-uppercase fw-semibold">
+                                        <i class="bi bi-list-check me-2"></i>
+                                        Special Requirements
+                                    </h6>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label class="form-label">Special Requirements</label>
+                                    <div class="d-flex flex-column gap-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="f_crossBorder">
+                                            <label class="form-check-label" for="f_crossBorder">
+                                                <i class="bi bi-globe me-1"></i>
+                                                Cross-border
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="f_adr">
+                                            <label class="form-check-label" for="f_adr">
+                                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                                ADR (Dangerous Goods)
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="f_refrigerated">
+                                            <label class="form-check-label" for="f_refrigerated">
+                                                <i class="bi bi-snow me-1"></i>
+                                                Temperature Controlled
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label class="form-label">Additional Services</label>
+                                    <div class="d-flex flex-column gap-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="f_loading">
+                                            <label class="form-check-label" for="f_loading">
+                                                <i class="bi bi-arrow-up-circle me-1"></i>
+                                                Loading Assistance
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="f_unloading">
+                                            <label class="form-check-label" for="f_unloading">
+                                                <i class="bi bi-arrow-down-circle me-1"></i>
+                                                Unloading Assistance
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="f_packaging">
+                                            <label class="form-check-label" for="f_packaging">
+                                                <i class="bi bi-box-seam me-1"></i>
+                                                Packaging
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label class="form-label">Urgency Level</label>
+                                    <div class="d-flex flex-column gap-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="f_urgent">
+                                            <label class="form-check-label" for="f_urgent">
+                                                <i class="bi bi-lightning me-1"></i>
+                                                Urgent Delivery
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="f_flexible">
+                                            <label class="form-check-label" for="f_flexible">
+                                                <i class="bi bi-calendar-range me-1"></i>
+                                                Flexible Timing
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="f_weekend">
+                                            <label class="form-check-label" for="f_weekend">
+                                                <i class="bi bi-calendar-week me-1"></i>
+                                                Weekend Delivery
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <label class="form-label">Actions</label>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <button class="btn btn-primary" onclick="filterLoads()">
+                                            <i class="bi bi-funnel me-2"></i>
+                                            Apply Filters
+                                        </button>
+                                        <button class="btn btn-outline-secondary" onclick="clearFilters()">
+                                            <i class="bi bi-arrow-clockwise me-2"></i>
+                                            Clear All
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="mb-0">
+                            <i class="bi bi-box-seam me-2"></i>
+                            Available Loads
+                        </h3>
+                        <span class="text-muted" id="loadsCount">Loading...</span>
+                    </div>
+
+                    <!-- Loads Container -->
+                    <div id="loadsGrid">
+                        <div class="py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Loading available loads...</p>
+                        </div>
+                    </div>
+
+                    <!-- No Results -->
+                    <div id="noResults" class="py-5" style="display: none;">
+                        <div class="display-1 text-muted mb-3">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h4>No loads found</h4>
+                        <p class="text-muted">Try adjusting your filters or check back later for new loads.</p>
+                        <button class="btn btn-outline-primary" onclick="clearFilters()">
+                            <i class="bi bi-arrow-clockwise me-2"></i>
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <div class="brand-icon mb-3">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <h5>Duff Bros Freight</h5>
+                        <p>Premium logistics solutions connecting businesses across Europe with reliable, secure, and cost-effective transport services.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Services</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Full Truck Load</a></li>
+                        <li><a href="#">Express Delivery</a></li>
+                        <li><a href="#">International</a></li>
+                        <li><a href="#">Warehousing</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Company</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Support</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Safety</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Contact</h6>
+                    <ul class="footer-links">
+                        <li><i class="bi bi-envelope me-2"></i>info@duffbros.co.uk</li>
+                        <li><i class="bi bi-telephone me-2"></i>+44 7763 686431</li>
+                        <li><i class="bi bi-geo-alt me-2"></i>Chatteris, UK</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 Duff Bros Freight. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Built with ❤️ for the logistics industry</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Duff Bros Freight</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div id="toastBody" class="toast-body">
+                <!-- Toast content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">
+                        <i class="bi bi-chat-dots me-2"></i>
+                        Send Message to Shipper
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="load-summary mb-4 p-3 bg-light rounded">
+                        <h6 class="mb-2" id="modalLoadTitle">Load Title</h6>
+                        <p class="mb-1 text-muted" id="modalLoadRoute">Route</p>
+                        <p class="mb-0 text-muted" id="modalLoadDetails">Details</p>
+                    </div>
+                    <form id="messageForm">
+                        <div class="mb-3">
+                            <label for="messageSubject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="messageSubject" placeholder="e.g., Quote for your load" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="messageContent" class="form-label">Message</label>
+                            <textarea class="form-control" id="messageContent" rows="5" placeholder="Introduce yourself and provide your quote details..." required></textarea>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="messagePrice" class="form-label">Your Quote (€)</label>
+                                <input type="number" class="form-control" id="messagePrice" placeholder="0.00" step="0.01">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="messageDelivery" class="form-label">Delivery Time</label>
+                                <input type="text" class="form-control" id="messageDelivery" placeholder="e.g., 2-3 days">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="sendMessage()">
+                        <i class="bi bi-send me-2"></i>
+                        Send Message
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            <!-- Scripts -->
+        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script defer src="assets/common.js"></script>
+    
+    <!-- Marketplace Script -->
+    <script>
+        let allLoads = [];
+        let filteredLoads = [];
+        let currentLoadId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMarketplaceData();
+            setupViewModeToggle();
+        });
+
+        function loadMarketplaceData() {
+            // Load from localStorage (in a real app, this would be from a database)
+            const savedLoads = localStorage.getItem('duff.marketplace.loads');
+            if (savedLoads) {
+                allLoads = JSON.parse(savedLoads);
+                filteredLoads = [...allLoads];
+                displayLoads(filteredLoads); // Pass filteredLoads to displayLoads
+            } else {
+                // Load sample data if none exists
+                loadSampleData();
+            }
+        }
+
+        function loadSampleData() {
+            allLoads = [
+                {
+                    id: '1',
+                    title: 'London to Paris - Electronics',
+                    type: 'full_truck',
+                    pickup: 'London, UK',
+                    dropoff: 'Paris, France',
+                    pickupDate: '2024-02-15',
+                    deliveryDate: '2024-02-17',
+                    weight: 1500,
+                    volume: 45,
+                    pallets: 25,
+                    cargoType: 'electronics',
+                    temperatureControl: 'none',
+                    urgencyLevel: 'standard',
+                    budget: '1000-2000',
+                    services: ['loading', 'unloading'],
+                    crossBorder: true,
+                    adr: false,
+                    contactName: 'John Smith',
+                    contactPhone: '+44 123 456 789',
+                    postedDate: '2024-02-10T10:00:00Z',
+                    description: 'High-value electronics shipment requiring careful handling and secure transport.'
+                },
+                {
+                    id: '2',
+                    title: 'Amsterdam to Berlin - Food & Beverage',
+                    type: 'refrigerated',
+                    pickup: 'Amsterdam, Netherlands',
+                    dropoff: 'Berlin, Germany',
+                    pickupDate: '2024-02-16',
+                    deliveryDate: '2024-02-18',
+                    weight: 800,
+                    volume: 30,
+                    pallets: 15,
+                    cargoType: 'food_beverage',
+                    temperatureControl: 'refrigerated',
+                    urgencyLevel: 'urgent',
+                    budget: '2000-5000',
+                    services: ['packaging'],
+                    crossBorder: true,
+                    adr: false,
+                    contactName: 'Maria Garcia',
+                    contactPhone: '+31 987 654 321',
+                    postedDate: '2024-02-11T14:30:00Z',
+                    description: 'Fresh food products requiring temperature-controlled transport and quick delivery.'
+                }
+            ];
+            
+            localStorage.setItem('duff.marketplace.loads', JSON.stringify(allLoads));
+            filteredLoads = [...allLoads];
+            displayLoads(filteredLoads); // Pass filteredLoads to displayLoads
+        }
+
+        function displayLoads(loads) {
+            const loadsGrid = document.getElementById('loadsGrid');
+            const loadsCount = document.getElementById('loadsCount');
+            
+            if (!loads || loads.length === 0) {
+                loadsGrid.innerHTML = `
+                    <div class="py-5">
+                        <div class="display-1 text-muted mb-3">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h4>No loads found</h4>
+                        <p class="text-muted">Try adjusting your filters or check back later for new loads.</p>
+                        <button class="btn btn-outline-primary" onclick="clearFilters()">
+                            <i class="bi bi-arrow-clockwise me-2"></i>
+                            Clear Filters
+                        </button>
+                    </div>
+                `;
+                loadsCount.textContent = '0';
+                return;
+            }
+            
+            loadsCount.textContent = loads.length;
+            
+            const loadsHTML = loads.map(load => createLoadCard(load)).join('');
+            loadsGrid.innerHTML = loadsHTML;
+        }
+
+        function createLoadCard(load) {
+            const postedDate = new Date(load.postedDate).toLocaleDateString();
+            const urgencyBadge = getUrgencyBadge(load.urgencyLevel);
+            const typeBadge = getTypeBadge(load.type);
+            
+            return `
+                <div class="load-row" data-load-id="${load.id}">
+                    <div class="load-row-header" onclick="toggleLoadRow('${load.id}')">
+                        <div class="load-row-main">
+                            <div class="load-title-section">
+                                <h6 class="load-title">${load.title}</h6>
+                                <div class="load-badges">
+                                    ${urgencyBadge}
+                                    ${typeBadge}
+                                </div>
+                            </div>
+                            <div class="load-route-section">
+                                <div class="route-display">
+                                    <span class="route-start">
+                                        <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                                        ${load.pickup}
+                                    </span>
+                                    <i class="bi bi-arrow-right mx-3 text-muted"></i>
+                                    <span class="route-end">
+                                        <i class="bi bi-geo-alt text-success me-2"></i>
+                                        ${load.dropoff}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="load-info-section">
+                                <div class="load-dates">
+                                    <span class="date-item">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        ${new Date(load.pickupDate).toLocaleDateString()}
+                                    </span>
+                                    <span class="date-item">
+                                        <i class="bi bi-calendar-check me-1"></i>
+                                        ${new Date(load.deliveryDate).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <div class="load-specs">
+                                    <span class="spec-item">${load.weight} kg</span>
+                                    <span class="spec-item">${load.volume} m³</span>
+                                    <span class="spec-item">${load.pallets} pallets</span>
+                                </div>
+                            </div>
+                            <div class="load-budget-section">
+                                <span class="budget-amount">${load.budget}</span>
+                            </div>
+                            <div class="load-actions">
+                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openMessageModal('${load.id}')">
+                                    <i class="bi bi-chat-dots me-1"></i>
+                                    Message
+                                </button>
+                                <i class="bi bi-chevron-down expand-icon" id="expand-icon-${load.id}"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="load-row-details" id="load-details-${load.id}">
+                        <div class="details-content">
+                            <div class="details-grid">
+                                <div class="detail-section">
+                                    <h6 class="detail-title">
+                                        <i class="bi bi-box-seam me-2"></i>
+                                        Cargo Details
+                                    </h6>
+                                    <div class="detail-content">
+                                        <p><strong>Type:</strong> ${load.cargoType ? load.cargoType.replace('_', ' ') : 'General'}</p>
+                                        <p><strong>Weight:</strong> ${load.weight} kg</p>
+                                        <p><strong>Volume:</strong> ${load.volume} m³</p>
+                                        <p><strong>Pallets:</strong> ${load.pallets}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-section">
+                                    <h6 class="detail-title">
+                                        <i class="bi bi-tags me-2"></i>
+                                        Requirements
+                                    </h6>
+                                    <div class="detail-content">
+                                        <div class="requirements-list">
+                                            ${load.temperatureControl !== 'none' ? `<span class="req-item temp">${load.temperatureControl}</span>` : ''}
+                                            ${load.crossBorder ? '<span class="req-item border">Cross-border</span>' : ''}
+                                            ${load.adr ? '<span class="req-item adr">ADR</span>' : ''}
+                                            ${load.loadingAssistance ? '<span class="req-item assistance">Loading Assistance</span>' : ''}
+                                            ${load.unloadingAssistance ? '<span class="req-item assistance">Unloading Assistance</span>' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-section">
+                                    <h6 class="detail-title">
+                                        <i class="bi bi-clock me-2"></i>
+                                        Timing & Urgency
+                                    </h6>
+                                    <div class="detail-content">
+                                        <p><strong>Urgency:</strong> ${load.urgencyLevel}</p>
+                                        <p><strong>Pickup:</strong> ${new Date(load.pickupDate).toLocaleDateString()}</p>
+                                        <p><strong>Delivery:</strong> ${new Date(load.deliveryDate).toLocaleDateString()}</p>
+                                        ${load.preferredDeliveryTime ? `<p><strong>Preferred Time:</strong> ${load.preferredDeliveryTime}</p>` : ''}
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-section">
+                                    <h6 class="detail-title">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        Additional Info
+                                    </h6>
+                                    <div class="detail-content">
+                                        <p><strong>Posted:</strong> ${postedDate}</p>
+                                        <p><strong>Budget:</strong> ${load.budget}</p>
+                                        ${load.notes ? `<p><strong>Notes:</strong> ${load.notes}</p>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="details-actions">
+                                <button class="btn btn-outline-primary" onclick="openMessageModal('${load.id}')">
+                                    <i class="bi bi-chat-dots me-2"></i>
+                                    Send Message to Shipper
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="viewLoadDetails('${load.id}')">
+                                    <i class="bi bi-eye me-2"></i>
+                                    View Full Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function toggleLoadRow(loadId) {
+            const detailsElement = document.getElementById(`load-details-${loadId}`);
+            const expandIcon = document.getElementById(`expand-icon-${loadId}`);
+            
+            if (detailsElement.classList.contains('expanded')) {
+                detailsElement.classList.remove('expanded');
+                expandIcon.style.transform = 'rotate(0deg)';
+            } else {
+                detailsElement.classList.add('expanded');
+                expandIcon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function getUrgencyBadge(urgency) {
+            const badges = {
+                'urgent': '<span class="badge bg-danger">Urgent</span>',
+                'standard': '<span class="badge bg-success">Standard</span>',
+                'flexible': '<span class="badge bg-info">Flexible</span>',
+                'scheduled': '<span class="badge bg-secondary">Scheduled</span>'
+            };
+            return badges[urgency] || badges.standard;
+        }
+
+        function getTypeBadge(type) {
+            const badges = {
+                'full_truck': '<span class="badge bg-primary">Full Truck</span>',
+                'partial': '<span class="badge bg-info">Partial</span>',
+                'express': '<span class="badge bg-warning">Express</span>',
+                'refrigerated': '<span class="badge bg-success">Refrigerated</span>',
+                'hazardous': '<span class="badge bg-danger">Hazardous</span>'
+            };
+            return badges[type] || '<span class="badge bg-secondary">Other</span>';
+        }
+
+        function filterLoads() {
+            const pickup = document.getElementById('f_pickup').value.toLowerCase();
+            const dropoff = document.getElementById('f_dropoff').value.toLowerCase();
+            const pickupDate = document.getElementById('f_pickupDate').value;
+            const deliveryDate = document.getElementById('f_deliveryDate').value;
+            const loadType = document.getElementById('f_loadType').value;
+            const cargoType = document.getElementById('f_cargoType').value;
+            const service = document.getElementById('f_service').value;
+            const budget = document.getElementById('f_budget').value;
+            const weight = document.getElementById('f_weight').value;
+            const volume = document.getElementById('f_volume').value;
+            const crossBorder = document.getElementById('f_crossBorder').checked;
+            const adr = document.getElementById('f_adr').checked;
+            const refrigerated = document.getElementById('f_refrigerated').checked;
+            const loading = document.getElementById('f_loading').checked;
+            const unloading = document.getElementById('f_unloading').checked;
+            const packaging = document.getElementById('f_packaging').checked;
+            const urgent = document.getElementById('f_urgent').checked;
+            const flexible = document.getElementById('f_flexible').checked;
+            const weekend = document.getElementById('f_weekend').checked;
+
+            filteredLoads = allLoads.filter(load => {
+                if (pickup && !load.pickup.toLowerCase().includes(pickup)) return false;
+                if (dropoff && !load.dropoff.toLowerCase().includes(dropoff)) return false;
+                if (pickupDate && load.pickupDate < pickupDate) return false;
+                if (deliveryDate && load.deliveryDate > deliveryDate) return false;
+                if (loadType && load.type !== loadType) return false;
+                if (cargoType && load.cargoType !== cargoType) return false;
+                if (service && load.service !== service) return false;
+                if (budget && load.budget !== budget) return false;
+                if (weight && load.weight > weight) return false;
+                if (volume && load.volume > volume) return false;
+                if (crossBorder && !load.crossBorder) return false;
+                if (adr && !load.adr) return false;
+                if (refrigerated && load.temperatureControl === 'none') return false;
+                if (loading && !load.services.includes('loading')) return false;
+                if (unloading && !load.services.includes('unloading')) return false;
+                if (packaging && !load.services.includes('packaging')) return false;
+                if (urgent && load.urgencyLevel !== 'urgent') return false;
+                if (flexible && load.urgencyLevel !== 'flexible') return false;
+                if (weekend && load.deliveryTime !== 'weekend') return false;
+                
+                return true;
+            });
+
+            displayLoads(filteredLoads);
+        }
+
+        function clearFilters() {
+            document.getElementById('f_pickup').value = '';
+            document.getElementById('f_dropoff').value = '';
+            document.getElementById('f_pickupDate').value = '';
+            document.getElementById('f_deliveryDate').value = '';
+            document.getElementById('f_loadType').value = '';
+            document.getElementById('f_cargoType').value = '';
+            document.getElementById('f_service').value = '';
+            document.getElementById('f_budget').value = '';
+            document.getElementById('f_weight').value = '';
+            document.getElementById('f_volume').value = '';
+            document.getElementById('f_crossBorder').checked = false;
+            document.getElementById('f_adr').checked = false;
+            document.getElementById('f_refrigerated').checked = false;
+            document.getElementById('f_loading').checked = false;
+            document.getElementById('f_unloading').checked = false;
+            document.getElementById('f_packaging').checked = false;
+            document.getElementById('f_urgent').checked = false;
+            document.getElementById('f_flexible').checked = false;
+            document.getElementById('f_weekend').checked = false;
+            
+            filteredLoads = [...allLoads];
+            displayLoads(filteredLoads);
+        }
+
+        function setupViewModeToggle() {
+
+        }
+
+        function openMessageModal(loadId) {
+            currentLoadId = loadId;
+            const load = allLoads.find(l => l.id === loadId);
+            
+            if (load) {
+                document.getElementById('modalLoadTitle').textContent = load.title;
+                document.getElementById('modalLoadRoute').textContent = `${load.pickup} → ${load.dropoff}`;
+                document.getElementById('modalLoadDetails').textContent = `${load.weight}kg, ${load.volume}m³, ${load.pallets} pallets`;
+                document.getElementById('messageSubject').value = `Quote for: ${load.title}`;
+                
+                const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+                messageModal.show();
+            }
+        }
+
+        function sendMessage() {
+            const subject = document.getElementById('messageSubject').value;
+            const content = document.getElementById('messageContent').value;
+            const price = document.getElementById('messagePrice').value;
+            const delivery = document.getElementById('messageDelivery').value;
+            
+            if (!subject || !content) {
+                showToast('Please fill in all required fields', 'warning');
+                return;
+            }
+            
+            // Save message to localStorage (in a real app, this would be sent to a server)
+            const message = {
+                id: Date.now().toString(),
+                loadId: currentLoadId,
+                subject: subject,
+                content: content,
+                price: price,
+                delivery: delivery,
+                timestamp: new Date().toISOString(),
+                from: 'Transporter', // In a real app, this would be the logged-in user
+                to: 'Shipper'
+            };
+            
+            const existingMessages = JSON.parse(localStorage.getItem('duff.messages') || '[]');
+            existingMessages.push(message);
+            localStorage.setItem('duff.messages', JSON.stringify(existingMessages));
+            
+            showToast('Message sent successfully! The shipper will be notified.', 'success');
+            
+            // Close modal and reset form
+            const messageModal = bootstrap.Modal.getInstance(document.getElementById('messageModal'));
+            messageModal.hide();
+            document.getElementById('messageForm').reset();
+            currentLoadId = null;
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastBody = document.getElementById('toastBody');
+            
+            toastBody.textContent = message;
+            toast.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'bg-info');
+            toast.classList.add(`bg-${type}`);
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+
+        function viewLoadDetails(loadId) {
+            const load = allLoads.find(l => l.id === loadId);
+            if (load) {
+                // In a real app, this would open a detailed view modal or navigate to a details page
+                showToast(`Viewing details for: ${load.title}`, 'info');
+            }
+        }
+
+        // Function to add new loads to the marketplace (called from loads.html)
+        window.addLoadToMarketplace = function(loadData) {
+            const newLoad = {
+                id: Date.now().toString(),
+                ...loadData,
+                postedDate: new Date().toISOString()
+            };
+            
+            allLoads.unshift(newLoad);
+            filteredLoads = [...allLoads];
+            localStorage.setItem('duff.marketplace.loads', JSON.stringify(allLoads));
+            displayLoads(filteredLoads); // Pass filteredLoads to displayLoads
+            
+            showToast('Load posted successfully and added to marketplace!', 'success');
+        };
+    </script>
+</body>
+</html>

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freight Marketplace — Messages</title>
-    <meta name="description" content="Keep shippers, transport ops, and drivers aligned with per-booking message threads and real-time updates.">
+    <title>Freight Marketplace — Inbox</title>
+    <meta name="description" content="Manage your conversations and stay connected with transporters and shippers through our message inbox.">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Messages - Freight Marketplace">
-    <meta property="og:description" content="Keep shippers, transport ops, and drivers aligned with per-booking message threads.">
-    <meta property="og:url" content="https://example.com/messages">
+    <meta property="og:title" content="Inbox - Freight Marketplace">
+    <meta property="og:description" content="Manage your conversations and stay connected with transporters and shippers.">
+    <meta property="og:url" content="https://example.com/inbox">
     <meta property="og:image" content="/og.jpg">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="theme-color" content="#3b82f6">
@@ -19,7 +19,7 @@
     <link href="assets/styles.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
-<body class="messages-page">
+<body>
     <!-- Skip Link for Accessibility -->
     <a class="skip-link" href="#content">Skip to content</a>
 
@@ -27,7 +27,13 @@
     <nav class="navbar navbar-expand-lg fixed-top" role="navigation" aria-label="Main">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <img src="./assets/duffbroslogo.jpg" alt="Duffbros" class="brand-logo me-2">
+                <div class="brand-icon me-3">
+                    <i class="bi bi-truck" aria-hidden="true"></i>
+                </div>
+                <div>
+                    <div class="brand-name">Duff Bros Freight</div>
+                    <div class="brand-tagline">Premium Logistics</div>
+                </div>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +58,7 @@
                         <a class="nav-link" href="bookings.html">Bookings</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="messages.html" aria-current="page">Messages</a>
+                        <a class="nav-link active" href="inbox.html" aria-current="page">Inbox</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="admin.html">Admin</a>
@@ -71,25 +77,19 @@
                     <div class="col-lg-8">
                         <div class="header-content">
                             <div class="header-badge">
-                                <i class="bi bi-chat-text" aria-hidden="true"></i>
-                                Messages
+                                <i class="bi bi-inbox" aria-hidden="true"></i>
+                                Message Inbox
                             </div>
-                            <h1 class="header-title">Per-booking Message Threads</h1>
+                            <h1 class="header-title">Message Inbox</h1>
                             <p class="header-description">
-                                Keep shippers, transport ops, and drivers aligned. When you accept a quote,
-                                a dedicated thread opens automatically for that booking.
+                                Manage your conversations and stay connected with transporters and shippers.
                             </p>
-                            <div class="d-flex flex-wrap gap-3 mt-4 small text-light">
-                                <span><i class="bi bi-paperclip" aria-hidden="true"></i> Attach files (coming soon)</span>
-                                <span><i class="bi bi-badge-hd" aria-hidden="true"></i> Message history</span>
-                                <span><i class="bi bi-bell" aria-hidden="true"></i> Real-time updates (polling)</span>
-                            </div>
                         </div>
                     </div>
                     <div class="col-lg-4">
                         <div class="header-visual">
                             <div class="header-icon">
-                                <i class="bi bi-chat-text" aria-hidden="true"></i>
+                                <i class="bi bi-inbox" aria-hidden="true"></i>
                             </div>
                         </div>
                     </div>
@@ -100,62 +100,62 @@
         <!-- Main Content -->
         <section class="main-content py-5">
             <div class="container">
-                <!-- Tips Card -->
-                <div class="row justify-content-center mb-5">
-                    <div class="col-lg-8">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center gap-2 mb-3">
-                                    <i class="bi bi-info-circle text-primary" aria-hidden="true"></i>
-                                    <h5 class="mb-0">Tips</h5>
+                <div class="row">
+                    <!-- Sidebar - Threads List -->
+                    <div class="col-lg-4 col-md-5">
+                        <div class="card h-100" style="min-height: 80vh;">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-chat-dots me-2" aria-hidden="true"></i>
+                                    Conversations
+                                </h5>
+                                <button class="btn btn-outline-primary btn-sm" onclick="refreshThreads()">
+                                    <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="threadsList" class="list-group list-group-flush">
+                                    <!-- Threads will be populated here -->
                                 </div>
-                                <ul class="mb-0 small text-muted">
-                                    <li>Use the role selector to send as shipper, transporter, or admin.</li>
-                                    <li>For customs, share MRN/EAD references and expected border times.</li>
-                                    <li>Include pickup/delivery instructions and contact details.</li>
-                                    <li>Update on delays or route changes promptly.</li>
-                                </ul>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Messages Container -->
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <div class="card">
-                            <div class="card-header">
+                    <!-- Main Chat Area -->
+                    <div class="col-lg-8 col-md-7">
+                        <div class="card h-100" style="min-height: 80vh;">
+                            <div class="card-header d-flex align-items-center justify-content-between">
                                 <h5 class="mb-0">
-                                    <i class="bi bi-chat-dots me-2"></i>
-                                    Messages
+                                    <i class="bi bi-chat me-2"></i>
+                                    <span id="currentThreadName">Select a conversation</span>
                                 </h5>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="markAsRead()">
+                                        <i class="bi bi-check-all"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="deleteThread()">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <div class="card-body p-0">
-                                <!-- Messages Box -->
-                                <div id="messagesBox" class="msg-wrap p-3 scroll-shadow" aria-live="polite" aria-busy="true">
-                                    <!-- Messages will be populated here by JavaScript -->
+                            <div class="card-body p-0 d-flex flex-column">
+                                <!-- Messages Area -->
+                                <div id="messagesArea" class="flex-grow-1 p-3" style="height: 400px; overflow-y: auto;">
+                                    <div class="text-muted py-5">
+                                        <i class="bi bi-chat-dots display-4"></i>
+                                        <p class="mt-3">Select a conversation to start messaging</p>
+                                    </div>
                                 </div>
 
-                                <!-- Composer Form -->
-                                <form id="composerForm" class="mt-3 p-3 border-top">
-                                    <div class="row g-3">
-                                        <div class="col-md-3">
-                                            <select id="senderRole" class="form-select">
-                                                <option value="shipper">Shipper</option>
-                                                <option value="transporter">Transporter</option>
-                                                <option value="admin">Admin</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <div class="input-group">
-                                                <textarea id="composerText" class="form-control" rows="3" placeholder="Type a message…" required></textarea>
-                                                <button class="btn btn-primary" type="submit">
-                                                    <i class="bi bi-send"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
+                                <!-- Message Input -->
+                                <div class="border-top p-3">
+                                    <form id="messageForm" class="d-flex gap-2">
+                                        <input type="text" id="messageInput" class="form-control" placeholder="Type your message..." required>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -212,9 +212,9 @@
                 <div class="col-lg-2 col-md-6">
                     <h6>Contact</h6>
                     <ul class="footer-links">
-                        <li><i class="bi bi-envelope me-2"></i>info@duffbros.co.uk</li>
-                        <li><i class="bi bi-telephone me-2"></i>+44 7763 686431</li>
-                        <li><i class="bi bi-geo-alt me-2"></i>Chatteris, UK</li>
+                        <li><i class="bi bi-envelope me-2"></i>hello@duffbros.com</li>
+                        <li><i class="bi bi-telephone me-2"></i>+44 123 456 789</li>
+                        <li><i class="bi bi-geo-alt me-2"></i>London, UK</li>
                     </ul>
                 </div>
             </div>

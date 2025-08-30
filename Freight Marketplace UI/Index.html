@@ -1,461 +1,554 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
-  <head>
-    <!-- =========================================================
-         Duff Bros Freight — Home / Landing
-         Fully compatible with assets/common.js & server.js
-         ======================================================= -->
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duffbros — Home</title>
+    <meta name="description" content="Freight marketplace connecting shippers and carriers—post loads, get bids, and book securely.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Freight Marketplace">
+    <meta property="og:description" content="Post loads, get bids, book instantly.">
+    <meta property="og:url" content="https://example.com/">
+    <meta property="og:image" content="/og.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="assets/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="home-page">
+    <!-- Skip Link for Accessibility -->
+    <a class="skip-link" href="#content">Skip to content</a>
 
-    <title>Duff Bros Freight — UK ↔ EU Marketplace</title>
-
-    <!-- Bootstrap & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
-
-    <!-- Project theme -->
-    <link href="assets/styles.css" rel="stylesheet"/>
-
-    <link rel="icon" href="data:,"/>
-    <meta name="color-scheme" content="dark light"/>
-  </head>
-
-  <body class="bg-body">
-    <!-- =========================================================
-         NAVBAR (sticky, shared on all pages)
-         ======================================================= -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
-      <div class="container">
-        <a class="navbar-brand fw-semibold d-flex align-items-center gap-2" href="index.html">
-          <i class="bi bi-truck"></i>
-          <span>Duff Bros Freight</span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fmNav" aria-controls="fmNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div id="fmNav" class="collapse navbar-collapse">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.html"><i class="bi bi-house"></i> Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="loads.html"><i class="bi bi-box-seam"></i> Post Shipment</a></li>
-            <li class="nav-item"><a class="nav-link" href="bids.html"><i class="bi bi-cash-coin"></i> Quotes</a></li>
-            <li class="nav-item"><a class="nav-link" href="bookings.html"><i class="bi bi-journal-check"></i> Bookings</a></li>
-            <li class="nav-item"><a class="nav-link" href="messages.html"><i class="bi bi-chat-text"></i> Messages</a></li>
-            <li class="nav-item"><a class="nav-link" href="admin.html"><i class="bi bi-shield-lock"></i> Admin</a></li>
-          </ul>
-
-          <!-- Shared quick controls -->
-          <div class="d-flex align-items-center gap-2">
-            <div class="input-group input-group-sm" style="width: 280px">
-              <span class="input-group-text">API</span>
-              <input id="baseUrl" class="form-control" value="http://localhost:3000" aria-label="API base URL"/>
+    <!-- Role Chooser Overlay -->
+    <div id="roleGate" class="role-gate">
+        <div class="gate-panel">
+            <div class="mb-4">
+                <h2 class="text-white mb-3">What do you want to do?</h2>
+                <p class="text-light">Choose your role to get started with Duff Bros Freight</p>
             </div>
-            <button class="btn btn-sm btn-outline-secondary" id="btnHealth">
-              <i class="bi bi-activity"></i> Health
-            </button>
-            <button class="btn btn-sm btn-danger" id="btnSeed">
-              <i class="bi bi-lightning-charge"></i> Seed
-            </button>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <!-- =========================================================
-         HERO
-         ======================================================= -->
-    <header class="py-5 hero-slate">
-      <div class="container">
-        <div class="row align-items-center g-4">
-          <div class="col-12 col-xl-7 text-white">
-            <span class="badge bg-white text-dark mb-3">Marketplace</span>
-            <h1 class="display-5 fw-bold lh-sm">UK ↔ EU Freight Marketplace</h1>
-            <p class="lead text-white-50 mt-2">
-              Shippers post shipments. Verified transporters quote, book, and deliver — with built-in messaging and status tracking.
-            </p>
-            <div class="d-flex flex-wrap gap-2">
-              <a class="btn btn-primary" href="loads.html"><i class="bi bi-box-seam"></i> Post a shipment</a>
-              <a class="btn btn-outline-primary" href="bids.html"><i class="bi bi-cash-coin"></i> Review quotes</a>
-              <a class="btn btn-outline-secondary" href="bookings.html"><i class="bi bi-journal-check"></i> Track bookings</a>
-            </div>
-
-            <!-- Status strip -->
-            <div class="mt-4 small">
-              <span class="text-white-50">API base: </span>
-              <span class="font-monospace" id="statusBase">http://localhost:3000</span>
-              <span class="mx-2">•</span>
-              <span class="text-white-50">Auth profiles:</span>
-              <span class="font-monospace">shipper / transporter / admin</span>
-            </div>
-          </div>
-
-          <div class="col-12 col-xl-5">
-            <!-- Quick start callout -->
-            <div class="card border-0 shadow-medium">
-              <div class="card-body">
-                <div class="d-flex align-items-center gap-2 mb-2">
-                  <i class="bi bi-rocket-takeoff text-primary"></i>
-                  <h2 class="h5 m-0">Quick start</h2>
-                </div>
-                <ol class="mb-0 small text-secondary">
-                  <li>Ensure the API is running at <span class="kbd">http://localhost:3000</span>.</li>
-                  <li>Click <b>Seed</b> in the navbar to load demo shipments &amp; tokens.</li>
-                  <li>Paste tokens below and press <b>Save</b>. You’re ready to demo.</li>
-                </ol>
-              </div>
-            </div>
-          </div>
-        </div><!-- /row -->
-      </div>
-    </header>
-
-    <!-- =========================================================
-         TOKENS PANEL (used by assets/common.js)
-         ======================================================= -->
-    <section class="container py-4">
-      <div class="row g-3">
-        <div class="col-12">
-          <div class="card border-0 shadow-soft">
-            <div class="card-header fw-semibold">Authentication tokens</div>
-            <div class="card-body">
-              <p class="text-secondary small mb-3">
-                After seeding, copy the tokens from the API response and paste them here. They’re saved locally and reused across pages.
-              </p>
-              <div class="row g-3">
-                <div class="col-12 col-md-4">
-                  <label class="form-label small">Shipper token</label>
-                  <input class="form-control" id="tok_ship" placeholder="paste shipper token…"/>
-                </div>
-                <div class="col-12 col-md-4">
-                  <label class="form-label small">Transporter token</label>
-                  <input class="form-control" id="tok_trans" placeholder="paste transporter token…"/>
-                </div>
-                <div class="col-12 col-md-4">
-                  <label class="form-label small">Admin token</label>
-                  <input class="form-control" id="tok_admin" placeholder="paste admin token…"/>
-                </div>
-              </div>
-              <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-primary" id="btnSaveTokens"><i class="bi bi-save"></i> Save</button>
-                <button class="btn btn-outline-secondary" id="btnClearTokens"><i class="bi bi-eraser"></i> Clear</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         FEATURE CARDS
-         ======================================================= -->
-    <section class="container pb-4">
-      <div class="row g-3">
-        <div class="col-12 col-lg-3">
-          <div class="card h-100">
-            <div class="card-body d-flex flex-column">
-              <h2 class="h6 d-flex align-items-center gap-2"><i class="bi bi-map text-primary"></i> Post &amp; browse loads</h2>
-              <p class="text-secondary small flex-grow-1">Add route, dates, weight/volume, and notes. Transporters will quote rapidly.</p>
-              <a class="btn btn-outline-primary mt-auto" href="loads.html">Open Loads</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-lg-3">
-          <div class="card h-100">
-            <div class="card-body d-flex flex-column">
-              <h2 class="h6 d-flex align-items-center gap-2"><i class="bi bi-cash-coin text-success"></i> Quotes</h2>
-              <p class="text-secondary small flex-grow-1">Compare bids, message transporters, accept the best and create a booking.</p>
-              <a class="btn btn-outline-success mt-auto" href="bids.html">Open Quotes</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-lg-3">
-          <div class="card h-100">
-            <div class="card-body d-flex flex-column">
-              <h2 class="h6 d-flex align-items-center gap-2"><i class="bi bi-journal-check text-info"></i> Bookings</h2>
-              <p class="text-secondary small flex-grow-1">Track booked jobs through ENROUTE → COLLECTED → IN_TRANSIT → DELIVERED.</p>
-              <a class="btn btn-outline-info mt-auto" href="bookings.html">Open Bookings</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-lg-3">
-          <div class="card h-100">
-            <div class="card-body d-flex flex-column">
-              <h2 class="h6 d-flex align-items-center gap-2"><i class="bi bi-chat-text text-warning"></i> Messages</h2>
-              <p class="text-secondary small flex-grow-1">Keep shippers &amp; drivers aligned with per-booking threads &amp; attachments.</p>
-              <a class="btn btn-outline-warning mt-auto" href="messages.html">Open Messages</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         OPEN SHIPMENTS (dynamic via common.js → #homeShipments)
-         ======================================================= -->
-    <section class="container pb-5">
-      <div class="d-flex align-items-end justify-content-between mb-2">
-        <div>
-          <h2 class="h4 fw-bold m-0">Open shipments</h2>
-          <div class="text-secondary small">Latest posts from shippers (auto-updates when you seed or add).</div>
-        </div>
-        <a class="btn btn-sm btn-outline-secondary" href="loads.html"><i class="bi bi-plus-circle"></i> Post new</a>
-      </div>
-
-      <ul id="homeShipments" class="row g-3 list-unstyled">
-        <!-- Skeletons (replaced by JS) -->
-        <li class="col-12 col-md-6 col-lg-4">
-          <div class="card h-100">
-            <div class="card-body placeholder-wave">
-              <span class="placeholder col-6"></span>
-              <div class="mt-2"><span class="placeholder col-10"></span></div>
-              <div class="mt-2"><span class="placeholder col-4"></span></div>
-            </div>
-          </div>
-        </li>
-        <li class="col-12 col-md-6 col-lg-4 d-none d-md-block">
-          <div class="card h-100">
-            <div class="card-body placeholder-wave">
-              <span class="placeholder col-5"></span>
-              <div class="mt-2"><span class="placeholder col-9"></span></div>
-              <div class="mt-2"><span class="placeholder col-3"></span></div>
-            </div>
-          </div>
-        </li>
-        <li class="col-12 col-md-6 col-lg-4 d-none d-lg-block">
-          <div class="card h-100">
-            <div class="card-body placeholder-wave">
-              <span class="placeholder col-4"></span>
-              <div class="mt-2"><span class="placeholder col-6"></span></div>
-              <div class="mt-2"><span class="placeholder col-7"></span></div>
-            </div>
-          </div>
-        </li>
-      </ul>
-
-      <div class="text-end">
-        <a class="btn btn-outline-light btn-sm" href="loads.html#list"><i class="bi bi-list-ul"></i> View all</a>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         FEATURED LANES (static content / marketing)
-         ======================================================= -->
-    <section id="lanes" class="band py-5">
-      <div class="container">
-        <div class="row g-3 align-items-stretch">
-          <div class="col-12 col-xl-7">
-            <div class="card h-100">
-              <div class="card-header fw-semibold">Featured lanes</div>
-              <div class="card-body">
-                <div class="row g-3">
-                  <div class="col-6">
-                    <div class="border rounded p-3 h-100">
-                      <div class="d-flex justify-content-between">
-                        <div class="fw-semibold">UK ↔ Spain</div>
-                        <span class="badge bg-info text-dark">Weekly</span>
-                      </div>
-                      <div class="text-secondary small mt-1">Ibiza / Mallorca specialists</div>
+            
+            <div class="row g-4">
+                <div class="col-12 col-md-6 col-lg-5">
+                    <div class="card h-100 border-0 shadow-lg">
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-box-seam text-primary" style="font-size: 3rem;" aria-hidden="true"></i>
+                            </div>
+                            <h4 class="card-title mb-3">Customer</h4>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2" aria-hidden="true"></i>Post loads and get quotes</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2" aria-hidden="true"></i>Compare transporter offers</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2" aria-hidden="true"></i>Track shipments in real-time</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2" aria-hidden="true"></i>Secure payment processing</li>
+                            </ul>
+                            <button id="chooseCustomer" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-arrow-right me-2"></i>Choose Customer
+                            </button>
+                        </div>
                     </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="border rounded p-3 h-100">
-                      <div class="d-flex justify-content-between">
-                        <div class="fw-semibold">UK ↔ France</div>
-                        <span class="badge bg-info text-dark">Weekly</span>
-                      </div>
-                      <div class="text-secondary small mt-1">Nord / Île-de-France</div>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="border rounded p-3 h-100">
-                      <div class="d-flex justify-content-between">
-                        <div class="fw-semibold">UK Domestic</div>
-                        <span class="badge bg-info text-dark">Daily</span>
-                      </div>
-                      <div class="text-secondary small mt-1">Nationwide pickup windows</div>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="border rounded p-3 h-100">
-                      <div class="d-flex justify-content-between">
-                        <div class="fw-semibold">Custom moves</div>
-                        <span class="badge bg-secondary">On-demand</span>
-                      </div>
-                      <div class="text-secondary small mt-1">Events, exhibitions, relocations</div>
-                    </div>
-                  </div>
                 </div>
-                <div class="text-end mt-3">
-                  <a class="btn btn-outline-secondary btn-sm" href="loads.html">Post to a lane</a>
+                
+                <div class="col-12 col-md-6 col-lg-5">
+                    <div class="card h-100 border-0 shadow-lg">
+                        <div class="card-body p-4">
+                            <div class="mb-3">
+                                <i class="bi bi-truck text-secondary" style="font-size: 3rem;"></i>
+                            </div>
+                            <h4 class="card-title mb-3">Transporter</h4>
+                            <ul class="list-unstyled text-start mb-4">
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Browse available loads</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Submit competitive quotes</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Manage bookings and routes</li>
+                                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Get paid securely</li>
+                            </ul>
+                            <button id="chooseTransporter" class="btn btn-secondary btn-lg w-100">
+                                <i class="bi bi-arrow-right me-2"></i>Choose Transporter
+                            </button>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-
-          <!-- How it works -->
-          <div class="col-12 col-xl-5">
-            <div class="card h-100">
-              <div class="card-header fw-semibold">How it works</div>
-              <div class="card-body">
-                <ol class="mb-0">
-                  <li class="mb-2"><strong>Shippers</strong> post with route, cargo, budget &amp; dates.</li>
-                  <li class="mb-2"><strong>Transporters</strong> submit quotes with price &amp; notes.</li>
-                  <li class="mb-2"><strong>Shippers</strong> accept → booking is created.</li>
-                  <li class="mb-2"><strong>Transporters</strong> update job statuses.</li>
-                  <li class="mb-0"><strong>All parties</strong> collaborate in messages.</li>
-                </ol>
-              </div>
+            
+            <div class="mt-4">
+                <a href="#" id="skipGate" class="text-light text-decoration-none">
+                    <small>Skip for now</small>
+                </a>
             </div>
-          </div>
-        </div><!-- /row -->
-      </div>
-    </section>
-
-    <!-- =========================================================
-         HTML TEMPLATES (safe placeholders for later JS)
-         ======================================================= -->
-    <section class="container py-5">
-      <div class="card">
-        <div class="card-header fw-semibold">HTML templates (for client rendering)</div>
-        <div class="card-body">
-          <p class="text-secondary small">
-            These blocks are available if you prefer client-side templating (optional). They don’t execute by themselves.
-          </p>
-
-          <!-- Load list item -->
-          <template id="tpl-load-item">
-            <button class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
-              <div class="me-auto">
-                <div class="small text-secondary">id: <span class="code">xxxx</span></div>
-                <div class="fw-semibold">City A → City B</div>
-              </div>
-              <div class="text-end">
-                <div><span class="badge text-bg-success">OPEN</span></div>
-                <div class="text-secondary small mt-1">£ 0.00</div>
-              </div>
-            </button>
-          </template>
-
-          <!-- Bid table row -->
-          <template id="tpl-bid-row">
-            <tr>
-              <td class="small"><span class="code">bid-xxxx</span></td>
-              <td>£ 0.00</td>
-              <td><span class="badge text-bg-secondary">PENDING</span></td>
-              <td class="text-end"><button class="btn btn-sm btn-success">Accept</button></td>
-            </tr>
-          </template>
-
-          <!-- Message bubble -->
-          <template id="tpl-msg-item">
-            <div class="border rounded p-2 mb-2">
-              <div class="text-secondary small">2025-08-16 12:00 · by user-xxxx</div>
-              <div>Message text…</div>
-            </div>
-          </template>
-
-          <!-- Booking card -->
-          <template id="tpl-booking-card">
-            <div class="border rounded p-2 mb-3">
-              <div class="text-secondary small mb-1">
-                booking <span class="code">book-xxxx</span> · status
-                <span class="badge text-bg-primary">BOOKED</span>
-              </div>
-              <div>load: <span class="code">load-xxxx</span> · transporter: <span class="code">usr-xxxx</span></div>
-              <div class="mt-2"><button class="btn btn-sm btn-outline-secondary">Timeline</button></div>
-            </div>
-          </template>
         </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         FAQ / NEXT
-         ======================================================= -->
-    <section class="container pb-5">
-      <div class="row g-4">
-        <div class="col-12 col-lg-6">
-          <div class="card h-100">
-            <div class="card-header fw-semibold">FAQ</div>
-            <div class="card-body">
-              <div class="mb-3">
-                <h3 class="h6">Do I need a database?</h3>
-                <p class="text-secondary small mb-0">Not for the demo — the API stores in memory. In production, use PostgreSQL or MongoDB.</p>
-              </div>
-              <div class="mb-3">
-                <h3 class="h6">How are transporters verified?</h3>
-                <p class="text-secondary small mb-0">Admin triggers KYB/KYC/insurance checks. The Admin page has a stub you can extend.</p>
-              </div>
-              <div class="mb-0">
-                <h3 class="h6">Is it responsive?</h3>
-                <p class="text-secondary small mb-0">Yes — Bootstrap’s grid &amp; components adapt across devices.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12 col-lg-6">
-          <div class="card h-100">
-            <div class="card-header fw-semibold">What’s next?</div>
-            <div class="card-body">
-              <ol class="mb-0">
-                <li>Use <b>Loads</b> to post and browse shipments.</li>
-                <li>In <b>Quotes</b>, accept a bid to create a booking &amp; message thread.</li>
-                <li>Track progress in <b>Bookings</b> and chat in <b>Messages</b>.</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         FOOTER
-         ======================================================= -->
-    <footer class="border-top py-4">
-      <div class="container small text-secondary d-flex flex-wrap align-items-center justify-content-between gap-2">
-        <div>© <span id="year">2025</span> Duff Bros Freight (Demo)</div>
-        <div class="d-flex align-items-center gap-3">
-          <a class="link-secondary text-decoration-none" href="#lanes">Featured lanes</a>
-          <a class="link-secondary text-decoration-none" href="loads.html">Loads</a>
-          <a class="link-secondary text-decoration-none" href="bids.html">Quotes</a>
-          <a class="link-secondary text-decoration-none" href="bookings.html">Bookings</a>
-          <a class="link-secondary text-decoration-none" href="messages.html">Messages</a>
-        </div>
-      </div>
-    </footer>
-
-    <!-- =========================================================
-         OFFCANVAS + TOAST (shared UI)
-         ======================================================= -->
-    <aside id="sidePanel" class="offcanvas offcanvas-end" tabindex="-1" aria-labelledby="sidePanelLabel">
-      <div class="offcanvas-header border-bottom">
-        <h5 class="offcanvas-title" id="sidePanelLabel">Details</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-      </div>
-      <div class="offcanvas-body" id="sidePanelBody">
-        <div class="text-secondary small">No content yet.</div>
-      </div>
-    </aside>
-
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080">
-      <div id="toast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body" id="toastBody">Ready.</div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-      </div>
     </div>
 
-    <!-- =========================================================
-         SCRIPTS
-         ======================================================= -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/common.js" defer></script>
-  </body>
+    <!-- Modern Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" role="navigation" aria-label="Main">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <img src="./assets/duffbroslogo.jpg" alt="Duffbros" class="brand-logo me-2">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html" aria-current="page">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="loads.html">Post Load</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="marketplace.html">Marketplace</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="bids.html">Quotes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="bookings.html">Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="messages.html">Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.html">Admin</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+        <!-- Main Content -->
+                     <main id="content" class="container content-area">
+        <!-- Hero Section (Duffbros Home) -->
+        <section class="py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7">
+                        <h1 class="hero-title">Freight made simple — by Duffbros</h1>
+                        <p class="hero-description">Duffbros is a UK-based logistics company that also operates a modern freight marketplace. Post your shipment once, receive quotes from verified carriers, and move goods reliably across the UK & Europe.</p>
+                        <p class="mb-3"><span class="badge bg-primary me-2">UK & EU coverage</span><span class="badge bg-primary me-2">Verified carriers</span><span class="badge bg-primary">Messaging & status updates</span></p>
+                        <div class="mt-3">
+                            <a href="loads.html" class="btn btn-primary btn-lg me-2">Post a shipment</a>
+                            <a href="marketplace.html" class="btn btn-outline-primary btn-lg">Browse marketplace</a>
+                        </div>
+                    </div>
+                    <!-- Right image -->
+                    <div class="col-lg-5 mt-4 mt-lg-0 d-flex align-items-center">
+                        <img src="./assets/duffbrosImage1.jpg?v=1" alt="Duffbros team carefully moving wrapped furniture" class="img-fluid rounded shadow-lg hero-side-image">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    <!-- Who we are -->
+    <section class="py-5">
+        <div class="container">
+            <h2>Who we are</h2>
+            <p>Duffbros is a Cambridgeshire-based logistics company. We combine hands-on transport expertise with a digital marketplace to help businesses ship faster and smarter—at transparent prices. Our team manages direct moves and specialist deliveries, while our marketplace connects you with vetted carriers when you need extra capacity or a specific lane.</p>
+        </div>
+    </section>
+
+    <!-- What makes us different -->
+    <section class="py-5">
+        <div class="container">
+            <h2>What makes us different</h2>
+            <ul>
+                <li>Experienced UK & EU road freight team</li>
+                <li>Transparent pricing and responsive support</li>
+                <li>Vetted carrier network with ratings and insurance checks</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- What we do -->
+    <section class="py-5">
+        <div class="container">
+            <h2>What we do</h2>
+            <ul>
+                <li>UK & EU Road Freight — FTL/LTL, pallets, part loads on regular lanes.</li>
+                <li>Home & Office Moves — Professional packing, careful handling, secure transport.</li>
+                <li>Express & Time-Critical — Dedicated vans; same-/next-day options.</li>
+                <li>White-glove & Fragile — Extra care for high-value or delicate items.</li>
+                <li>Storage & Handling — Short-term storage and consolidated shipments.</li>
+                <li>Customs Support — Guidance on documents for cross-border moves.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- How the marketplace works -->
+    <section class="py-5">
+        <div class="container">
+            <h2>How the marketplace works</h2>
+            <ol>
+                <li>Post your shipment — Add pickup, dropoff, dates, size/weight, special handling.</li>
+                <li>Receive quotes — Carriers send live prices & ETAs; compare ratings and documents.</li>
+                <li>Book & pay — Choose the best offer, confirm details, and pay securely.</li>
+                <li>Track & message — Chat with carriers, get updates, and download proof of delivery.</li>
+            </ol>
+            <div class="mt-3">
+                <a href="loads.html" class="btn btn-primary me-2">Post a shipment</a>
+                <a href="marketplace.html" class="btn btn-outline-primary">Browse marketplace</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- For carriers & drivers -->
+    <section class="py-5">
+        <div class="container">
+            <h2>For carriers & drivers</h2>
+            <p>Keep vehicles full and routes efficient. Find loads that match your lanes, message shippers directly, and get paid faster.</p>
+            <p><strong>Highlights:</strong> Verified shipper profiles • Lane & capacity filters • Transparent pricing</p>
+            <div class="mt-3">
+                <a href="marketplace.html" class="btn btn-primary me-2">Join as a carrier</a>
+                <a href="marketplace.html" class="btn btn-outline-primary">Find loads</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-5">
+        <div class="container">
+            <h2>FAQ</h2>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq1-heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="false" aria-controls="faq1">
+                            Is Duffbros a carrier or a marketplace?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse" aria-labelledby="faq1-heading" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">Both. We operate transport services and run a marketplace where verified carriers can quote on your jobs.</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq2-heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+                            Do I have to use the marketplace?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faq2-heading" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">No—you can book directly with our in-house team.</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq3-heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
+                            Where do you operate?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" aria-labelledby="faq3-heading" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">Across the UK and Europe, including popular lanes UK ↔ FR/DE/NL/ES/IT.</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq4-heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4">
+                            How are carriers vetted?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" aria-labelledby="faq4-heading" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">We review insurance, licenses, and performance metrics; shippers can see ratings before booking.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section class="py-5">
+        <div class="container">
+            <h2>Let’s move your freight</h2>
+            <p>Tell us what you need moved and when. We’ll get you competitive quotes fast.</p>
+            <a href="loads.html" class="btn btn-primary btn-lg">Post a shipment</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8">
+                    <h2 class="section-title">Why Choose Duff Bros Freight?</h2>
+                    <p class="section-subtitle">Professional logistics solutions designed for modern businesses</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-lightning-charge"></i>
+                        </div>
+                        <h3>Fast & Reliable</h3>
+                        <p>Get quotes within minutes and book transport in seconds. Our network ensures timely deliveries across Europe.</p>
+                        <div class="feature-metrics">
+                            <span class="metric">24h Response</span>
+                            <span class="metric">99% On-time</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h3>Secure & Insured</h3>
+                        <p>All shipments are fully insured with verified transporters. Your cargo is protected from pickup to delivery.</p>
+                        <div class="feature-metrics">
+                            <span class="metric">Full Coverage</span>
+                            <span class="metric">Verified Partners</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                        <h3>Cost Effective</h3>
+                        <p>Competitive rates with transparent pricing. No hidden fees, just fair costs for quality service.</p>
+                        <div class="feature-metrics">
+                            <span class="metric">Best Rates</span>
+                            <span class="metric">No Hidden Fees</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works-section py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8">
+                    <h2 class="section-title">How It Works</h2>
+                    <p class="section-subtitle">Simple steps to get your freight moving</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="step-card">
+                        <div class="step-icon">
+                            <i class="bi bi-plus-circle"></i>
+                        </div>
+                        <h4>Post Your Load</h4>
+                        <p>Describe your shipment details, route, and requirements in our easy-to-use form.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="step-card">
+                        <div class="step-icon">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <h4>Get Quotes</h4>
+                        <p>Receive competitive quotes from verified transporters within minutes.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="step-card">
+                        <div class="step-icon">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <h4>Choose & Book</h4>
+                        <p>Select the best quote and book your transport with secure payment.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="step-card">
+                        <div class="step-icon">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <h4>Track & Deliver</h4>
+                        <p>Monitor your shipment in real-time until safe delivery.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section py-5">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8">
+                    <h2 class="section-title">Our Services</h2>
+                    <p class="section-subtitle">Comprehensive logistics solutions for every need</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="service-card">
+                        <div class="service-header">
+                            <div class="service-icon">
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                            <h3>Full Truck Load</h3>
+                        </div>
+                        <p>Complete truck loads for large shipments with dedicated transport and flexible scheduling.</p>
+                        <ul class="service-features">
+                            <li><i class="bi bi-check"></i> Dedicated vehicles</li>
+                            <li><i class="bi bi-check"></i> Flexible scheduling</li>
+                            <li><i class="bi bi-check"></i> Real-time tracking</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="service-card featured">
+                        <div class="service-header">
+                            <div class="service-icon">
+                                <i class="bi bi-truck"></i>
+                            </div>
+                            <h3>Express Delivery</h3>
+                        </div>
+                        <p>Urgent shipments with guaranteed delivery times and priority handling.</p>
+                        <ul class="service-features">
+                            <li><i class="bi bi-check"></i> Guaranteed delivery</li>
+                            <li><i class="bi bi-check"></i> Priority handling</li>
+                            <li><i class="bi bi-check"></i> 24/7 support</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="service-card">
+                        <div class="service-header">
+                            <div class="service-icon">
+                                <i class="bi bi-globe"></i>
+                            </div>
+                            <h3>International</h3>
+                        </div>
+                        <p>Cross-border logistics with customs clearance and documentation support.</p>
+                        <ul class="service-features">
+                            <li><i class="bi bi-check"></i> Customs clearance</li>
+                            <li><i class="bi bi-check"></i> Documentation support</li>
+                            <li><i class="bi bi-check"></i> Multi-language</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div>
+                        <h2>Ready to Get Started?</h2>
+                        <p>Join thousands of businesses already using Duff Bros Freight for their logistics needs.</p>
+                        <div class="cta-actions">
+                            <a href="loads.html" class="btn btn-primary btn-lg me-3">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Post Your First Load
+                            </a>
+                            <a href="marketplace.html" class="btn btn-outline-primary btn-lg">
+                                <i class="bi bi-search me-2"></i>
+                                Browse Available Loads
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <div class="brand-icon mb-3">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <h5>Duff Bros Freight</h5>
+                        <p>Premium logistics solutions connecting businesses across Europe with reliable, secure, and cost-effective transport services.</p>
+                        <div class="social-links mt-4">
+                            <a href="#" class="social-link"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-twitter" aria-hidden="true"></i></a>
+                            <a href="#" class="social-link"><i class="bi bi-facebook" aria-hidden="true"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Services</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Full Truck Load</a></li>
+                        <li><a href="#">Express Delivery</a></li>
+                        <li><a href="#">International</a></li>
+                        <li><a href="#">Warehousing</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Company</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Support</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Safety</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6>Contact</h6>
+                    <ul class="footer-links">
+                        <li><i class="bi bi-envelope me-2"></i>info@duffbros.co.uk</li>
+                        <li><i class="bi bi-telephone me-2"></i>+44 7763 686431</li>
+                        <li><i class="bi bi-geo-alt me-2"></i>Chatteris, UK</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; <span id="year"></span> Duffbros Ltd • Chatteris, UK</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0"><a href="#">Privacy</a> • <a href="#">Terms</a> • <a href="#">Cookies</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Duff Bros Freight</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div id="toastBody" class="toast-body">
+                <!-- Toast content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Offcanvas Side Panel -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidePanel" aria-labelledby="sidePanelLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidePanelLabel">Side Panel</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div id="sidePanelBody" class="offcanvas-body">
+            <!-- Side panel content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="assets/common.js"></script>
+</body>
 </html>
